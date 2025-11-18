@@ -10,3 +10,11 @@ https://github.com/bondrzr/Paris-Gentrification-ProjectDM.git
 ##Link to sources 
 
 ###Sources description 
+
+####Data Information Tables
+
+#####Important Variables Description
+
+######Data Joining/Cleaning Description
+
+#######Research Question
