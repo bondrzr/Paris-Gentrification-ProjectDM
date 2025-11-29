@@ -8,6 +8,12 @@ format: html
 https://github.com/bondrzr/Paris-Gentrification-ProjectDM.git
 
 ##Link to sources 
+1) FILOSOFI
+https://www.insee.fr/fr/statistiques/3560118 (2015)
+https://www.insee.fr/fr/statistiques/4295611 (2016)
+https://www.insee.fr/fr/statistiques/5055909#consulter (2018)
+https://www.insee.fr/fr/statistiques/7233950 (2020)
+https://www.insee.fr/fr/statistiques/8229323#documentation (2021)
 
 ###Sources description 
 
