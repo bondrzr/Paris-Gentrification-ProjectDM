@@ -1,0 +1,155 @@
+---
+title: "Cleaning FILOSFI FILES"
+author: "Paul"
+format: html
+---
+
+```{r}
+library(here)
+library(readxl)
+library(janitor)
+library(dplyr)
+```
+
+#2015
+```{r}
+D_rev2015 <- readxl::read_excel(here("DATA" , "BASE_TD_FILO_DEC_IRIS_2015.xls"), skip = 4)
+names(D_rev2015)
+
+D_rev2015_clean <- D_rev2015 %>%
+  janitor::clean_names() %>%
+  rename(
+    iris = iris,
+    iris_lib = libelle_de_l_iris,
+    commune = commune_ou_arm,
+    commune_lib = libelle_commune_ou_arm
+  )
+
+D_rev2015_clean <- D_rev2015_clean %>%
+  mutate(iris = as.character(iris)) %>%
+  filter(nchar(iris) == 9)
+
+IDF_dep <- c("75","77","78","91","92","93","94","95")
+
+D_rev2015_IDF <- D_rev2015_clean %>%
+  mutate(dep = substr(iris, 1, 2)) %>%
+  filter(dep %in% IDF_dep)
+
+
+nrow(D_rev2015_IDF)
+```
+
+#2016
+```{r}
+here::i_am("Paris-Gentrification-ProjectDM.Rproj")
+library(here)
+library(readr)
+D_rev2016 <- readxl::read_excel(here("DATA", "BASE_TD_FILO_DEC_IRIS_2016.xls"), skip = 4)
+
+D_rev2016_clean <- D_rev2016 %>%
+  janitor::clean_names() %>%
+  rename(
+    iris = iris,
+    iris_lib = libelle_de_l_iris,
+    commune = commune_ou_arm,
+    commune_lib = libelle_commune_ou_arm
+  )
+
+D_rev2016_clean <- D_rev2016_clean %>%
+  mutate(iris = as.character(iris)) %>%
+  filter(nchar(iris) == 9)
+
+IDF_dep <- c("75","77","78","91","92","93","94","95")
+
+D_rev2016_IDF <- D_rev2016_clean %>%
+  mutate(dep = substr(iris, 1, 2)) %>%
+  filter(dep %in% IDF_dep)
+
+nrow(D_rev2016_IDF)
+```
+
+#2018
+```{r}
+D_rev2018 <- readxl::read_excel(here("DATA" , "BASE_TD_FILO_DEC_IRIS_2018.xlsx"), skip = 4)
+names(D_rev2018)
+
+
+D_rev2018 <- D_rev2018 %>%
+  janitor::clean_names() %>%
+  rename(
+    iris = iris,
+    iris_lib = libelle_de_l_iris,
+    commune = commune_ou_arm,
+    commune_lib = libelle_commune_ou_arm
+  )
+
+D_rev2018 <- D_rev2018 %>%
+  mutate(iris = as.character(iris)) %>%
+  filter(nchar(iris) == 9)
+
+IDF_dep <- c("75","77","78","91","92","93","94","95")
+
+D_rev2018_IDF <- D_rev2018 %>%
+  mutate(dep = substr(iris, 1, 2)) %>%
+  filter(dep %in% IDF_dep)
+
+nrow(D_rev2018_IDF)
+
+```
+
+#2020
+```{r}
+here::i_am("Paris-Gentrification-ProjectDM.Rproj")
+library(here)
+library(readr)
+D_rev2020 <- readxl::read_excel(here("DATA", "BASE_TD_FILO_DEC_IRIS_2020.xlsx"), skip = 4)
+
+D_rev2020 <- D_rev2020 %>%
+  janitor::clean_names() %>%
+  rename(
+    iris = iris,
+    iris_lib = libelle_de_l_iris,
+    commune = commune_ou_arm,
+    commune_lib = libelle_commune_ou_arm
+  )
+
+D_rev2020 <- D_rev2020 %>%
+  mutate(iris = as.character(iris)) %>%
+  filter(nchar(iris) == 9)
+
+IDF_dep <- c("75","77","78","91","92","93","94","95")
+
+D_rev2020_IDF <- D_rev2020 %>%
+  mutate(dep = substr(iris, 1, 2)) %>%
+  filter(dep %in% IDF_dep)
+
+nrow(D_rev2020_IDF)
+```
+
+#2021
+```{r}
+D_rev2021 <- readxl::read_excel(here("DATA" , "BASE_TD_FILO_IRIS_2021_DISP.xlsx"), skip = 4)
+names(D_rev2021)
+
+D_rev2021 <- D_rev2021 %>%
+  janitor::clean_names() %>%
+  rename(
+    iris = iris,
+    iris_lib = libelle_de_l_iris,
+    commune = commune_ou_arm,
+    commune_lib = libelle_commune_ou_arm
+  )
+
+D_rev2021 <- D_rev2021 %>%
+  mutate(iris = as.character(iris)) %>%
+  filter(nchar(iris) == 9)
+
+IDF_dep <- c("75","77","78","91","92","93","94","95")
+
+D_rev2021_IDF <- D_rev2021 %>%
+  mutate(dep = substr(iris, 1, 2)) %>%
+  filter(dep %in% IDF_dep)
+
+nrow(D_rev2021_IDF)
+```
+
