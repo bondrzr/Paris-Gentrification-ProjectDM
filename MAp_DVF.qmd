@@ -1,0 +1,67 @@
+---
+title: "Map_paris_Price"
+author: "pol"
+format: html
+---
+```{r}
+library(dplyr)
+library(sf)
+library(ggplot2)
+library(viridis) 
+
+```
+
+
+
+```{r}
+prix_2020_25 <- prix_iris_2020_25 %>%
+  group_by(CODE_IRIS) %>%
+  summarise(
+    prix_m2_med_2020_25 = median(prix_m2_med, na.rm = TRUE),
+    n_annees            = n(),          # nb d'années avec info
+    .groups = "drop"
+  ) %>%
+  filter(n_annees >= 3)                 # option : au moins 3 années observées
+
+```
+
+```{r}
+
+iris_price_2020_25 <- iris2020 %>%
+  left_join(prix_2020_25, by = "CODE_IRIS")
+
+## 4. Ne garder que Paris (département 75)
+iris_paris_2020_25 <- iris_price_2020_25 %>%
+  filter(substr(CODE_IRIS, 1, 2) == "75")
+
+```
+
+```{r}
+ggplot() +
+  geom_sf(data = iris_paris_2020_25,
+          aes(fill = prix_m2_med_2020_25),
+          color = NA) +
+  scale_fill_viridis(
+    option   = "magma",
+    direction = -1,
+    na.value = "grey85",
+    name     = "Prix/m² médian\n2020–2025"
+  ) +
+  theme_minimal() +
+  labs(
+    title    = "Prix au m² médian par IRIS – Paris (moyenne 2020–2025)",
+    subtitle = "IRIS en gris : données DVF insuffisantes sur la période",
+    caption  = "Source : DVF, Insee"
+  ) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text  = element_blank(),
+    axis.title = element_blank()
+  )
+
+```
+
+
+
+
+

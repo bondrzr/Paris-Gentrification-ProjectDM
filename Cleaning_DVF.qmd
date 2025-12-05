@@ -1,0 +1,128 @@
+---
+title: "Cleaning_DVF"
+author: "Paul"
+format: html
+---
+
+#First DVf database (2020-1stSemester2025)
+```{r}
+library(data.table)
+library(sf)
+library(dplyr)
+```
+
+#Keeping the departements we want to look at, same for the columns 
+```{r}
+idf <- c("75","92","93","94","91","77","78","95")
+
+
+cols_keep <- c(
+  "id_mutation",
+  "date_mutation",
+  "nature_mutation",
+  "valeur_fonciere",
+  "type_local",
+  "code_type_local",
+  "surface_reelle_bati",
+  "nombre_pieces_principales",
+  "surface_terrain",
+  "code_postal",
+  "code_commune",
+  "nom_commune",
+  "longitude",
+  "latitude",
+  "id_parcelle",
+  "code_departement"
+)
+
+```
+
+#Getting rid of problematic data 
+```{r}
+dvf <- fread(
+  "dvf.csv",
+  select = cols_keep           
+)[
+  code_departement %in% idf &                          
+    type_local %in% c("Appartement", "Maison") &          
+    !is.na(surface_reelle_bati) &                         
+    surface_reelle_bati > 9 & surface_reelle_bati < 500 & 
+    valeur_fonciere > 5000 & valeur_fonciere < 5e6 &      
+    !is.na(longitude) & !is.na(latitude)                  
+]
+```
+
+
+#Building a Price/Squaremeter indicator
+```{r}
+dvf[, prix_m2 := valeur_fonciere / surface_reelle_bati]
+```
+
+
+#Spatial reattchement 
+#transforming in lambert 93 (iris format)
+```{r}
+dvf_sf <- st_as_sf(
+  dvf,
+  coords = c("longitude", "latitude"),
+  crs = 4326              
+) |>
+  st_transform(2154)      
+```
+
+#loading up iris shape file of 2020
+```{r}
+
+iris2020 <- st_read("DATA/CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020/CONTOURS-IRIS.shp") |>
+  st_transform(2154)
+
+
+names(iris2020)
+
+
+```
+```{r}
+dvf_iris <- st_join(
+  dvf_sf,
+  iris2020[, c("CODE_IRIS", "NOM_IRIS")],   
+  left = TRUE
+)
+
+
+dvf_iris <- dvf_iris |> 
+  filter(!is.na(CODE_IRIS))
+
+```
+
+
+```{r}
+dvf_iris <- dvf_iris |>
+  mutate(
+    annee = as.integer(format(as.Date(date_mutation), "%Y"))
+  )
+
+```
+
+```{r}
+
+prix_iris_2020_25 <- dvf_iris |>
+  st_drop_geometry() |>
+  group_by(CODE_IRIS, annee) |>
+  summarise(
+    prix_m2_med  = median(prix_m2, na.rm = TRUE),  
+    prix_m2_mean = mean(prix_m2, na.rm = TRUE),    
+    n_ventes     = n(),                            
+    .groups = "drop"
+  ) 
+prix_iris_2020_25 <- prix_iris_2020_25 |>
+  filter(n_ventes >= 1)    
+
+```
+
+```{r}
+nrow(prix_iris)               
+length(unique(prix_iris$CODE_IRIS))  
+sort(unique(prix_iris$annee))        
+
+```
+
