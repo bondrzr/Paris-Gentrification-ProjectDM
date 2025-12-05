@@ -5,3 +5,7 @@
 .DS_Store
 Paris_Project_Presentation.html
 Paris_Project_Presentation_files
+DATA
+dvf2020-2025.csv
+dvf2014-2018.csv
+DVFcleaning.rmarkdown
