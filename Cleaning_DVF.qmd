@@ -120,9 +120,26 @@ prix_iris_2020_25 <- prix_iris_2020_25 |>
 ```
 
 ```{r}
-nrow(prix_iris)               
-length(unique(prix_iris$CODE_IRIS))  
-sort(unique(prix_iris$annee))        
+nrow(prix_iris_2020_25)               
+length(unique(prix_iris_2020_25$CODE_IRIS))  
+sort(unique(prix_iris_2020_25$annee))        
+```
 
+#DVF 2014-2018
+
+```{r}
+dvf2014_18 <- fread(
+  "DATA/dvf_14_18.csv",
+  select = cols_keep           
+)[
+  code_departement %in% idf &                          
+    type_local %in% c("Appartement", "Maison") &          
+    !is.na(surface_reelle_bati) &                         
+    surface_reelle_bati > 9 & surface_reelle_bati < 500 & 
+    valeur_fonciere > 5000 & valeur_fonciere < 5e6 &      
+    !is.na(longitude) & !is.na(latitude)                  
+]
+
+names("DATA/dvf_14_18.csv")
 ```
 
