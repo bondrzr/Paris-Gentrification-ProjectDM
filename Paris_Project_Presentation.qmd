@@ -18,7 +18,10 @@ https://www.insee.fr/fr/statistiques/8229323#documentation (2021)
 2) IRIS historical change 
 https://www.data.gouv.fr/datasets/historique-des-codes-iris?resource_id=80cc1fa3-2339-4b04-9abc-d0ca84116921
 
-DVF
+3) IRIS Shapefile 
+https://geoservices.ign.fr/telechargement-api/CONTOURS-IRIS?
+
+4) DVF
 https://www.data.gouv.fr/datasets/demandes-de-valeurs-foncieres-geolocalisees (2020-S2-2025-S1)
 https://data.cquest.org/dgfip_dvf/ click on dvf-2014-2018.csv.gz (2014-2018)                           
 ###Sources description 
@@ -30,11 +33,19 @@ https://data.cquest.org/dgfip_dvf/ click on dvf-2014-2018.csv.gz (2014-2018)
 
 
 #####Important Variables Description
+IRIS -> CODE IRIS(Îlots regroupés pour l'information statistique) this is an INSEE indicator that regroups 10K inhabitants that facilitates statiscal analysis. We'll use it as proxy for parisian neighbourhoods.
+
+Prix_M2 -> this is the price per square meter we created this from our DVF file by dividind Price of "Valeur foncière" by the surface of the place. 
+
 
 ######Data Joining/Cleaning Description
-Every cleaning operation has it's own qmd file for readers to be able to use data as we have found For FILOSOFI it was quite simple the objective was solely to keep the departements that interest us for our analysis and renaming columns for the names to be the same across years.
-For the joining part we used a passage table we chose to keep the 2020 IRIS CODE As our time frame. We used this table to transform IRIS number from previous years to the 2020 version or no change if there was no changement done.
+Every cleaning operation has it's own qmd file for readers to be able to use data as we have found.
 
-For 
+For FILOSOFI it was quite simple the objective was solely to keep the departements that interest us for our analysis and renaming columns for the names to be the same across years.
+For the joining part we used a passage table we chose to keep the 2020 IRIS CODE As our time frame. We used this table to transform IRIS number from previous years to the 2020 version or no change if there was no change done in the irises.
+
+For the DVF File we had 2 big databases each of them covering multiple years (2nd semester of 2020- 1st semester of 2025) and 2014-2018.
+
+THe first one was the easiest as it had longitude and latitude, the first part was always to keep the IDF area in our analysis excluding the rest and keeping the columns that we might use in our analysis. Then we tried to get rid of "outliers" this could be when theres unavailable data or some that doesnt make any sense. The biggest part was going from long-lat to IRIS point for this we used a Iris shapefile of france in 2020 because it matched for most of our databases ( our data had to be modified into lambert 93 to match).
 
 #######Research Question
