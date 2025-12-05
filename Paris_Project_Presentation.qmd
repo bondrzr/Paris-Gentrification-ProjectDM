@@ -15,12 +15,26 @@ https://www.insee.fr/fr/statistiques/5055909#consulter (2018)
 https://www.insee.fr/fr/statistiques/7233950 (2020)
 https://www.insee.fr/fr/statistiques/8229323#documentation (2021)
 
+2) IRIS historical change 
+https://www.data.gouv.fr/datasets/historique-des-codes-iris?resource_id=80cc1fa3-2339-4b04-9abc-d0ca84116921
+
+DVF
+https://www.data.gouv.fr/datasets/demandes-de-valeurs-foncieres-geolocalisees (2020-S2-2025-S1)
+https://data.cquest.org/dgfip_dvf/ click on dvf-2014-2018.csv.gz (2014-2018)                           
 ###Sources description 
 
 ####Data Information Tables
+```{r}
+
+```
+
 
 #####Important Variables Description
 
 ######Data Joining/Cleaning Description
+Every cleaning operation has it's own qmd file for readers to be able to use data as we have found For FILOSOFI it was quite simple the objective was solely to keep the departements that interest us for our analysis and renaming columns for the names to be the same across years.
+For the joining part we used a passage table we chose to keep the 2020 IRIS CODE As our time frame. We used this table to transform IRIS number from previous years to the 2020 version or no change if there was no changement done.
+
+For 
 
 #######Research Question
