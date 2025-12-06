@@ -11,18 +11,15 @@ library(viridis)
 
 ```
 
-
-
 ```{r}
 prix_2020_25 <- prix_iris_2020_25 %>%
   group_by(CODE_IRIS) %>%
   summarise(
     prix_m2_med_2020_25 = median(prix_m2_med, na.rm = TRUE),
-    n_annees            = n(),          # nb d'années avec info
+    n_annees            = n(),          
     .groups = "drop"
   ) %>%
-  filter(n_annees >= 3)                 # option : au moins 3 années observées
-
+  filter(n_annees >= 3)                 
 ```
 
 ```{r}
@@ -30,7 +27,7 @@ prix_2020_25 <- prix_iris_2020_25 %>%
 iris_price_2020_25 <- iris2020 %>%
   left_join(prix_2020_25, by = "CODE_IRIS")
 
-## 4. Ne garder que Paris (département 75)
+
 iris_paris_2020_25 <- iris_price_2020_25 %>%
   filter(substr(CODE_IRIS, 1, 2) == "75")
 
