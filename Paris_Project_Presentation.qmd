@@ -104,6 +104,15 @@ IRIS -> CODE IRIS(Îlots regroupés pour l'information statistique) this is an I
 
 Prix_M2 -> this is the price per square meter we created this from our DVF file by dividind Price of "Valeur foncière" by the surface of the place. 
 
+N_ventes -> this is the number of sales that have occurred in the neighborhood corresponding to the IRIS code
+
+Income per household unit variables 
+  Mediane -> Median income per household unit  
+  x1er_quartile -> First quartile value of income per household unit
+  x3er_quartile -> Third quartile value of income per household unit
+  
+
+
 
 ######Data Joining/Cleaning Description
 Every cleaning operation has it's own qmd file for readers to be able to use data as we have found.
