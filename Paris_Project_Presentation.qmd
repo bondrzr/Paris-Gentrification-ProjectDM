@@ -20,6 +20,8 @@ https://www.data.gouv.fr/datasets/historique-des-codes-iris?resource_id=80cc1fa3
 
 3) IRIS Shapefile 
 https://geoservices.ign.fr/telechargement-api/CONTOURS-IRIS?
+filter for "France entière" and "shapefile" there's only one left for 2020. 
+In the zip file 
 
 4) DVF
 https://www.data.gouv.fr/datasets/demandes-de-valeurs-foncieres-geolocalisees (2020-S2-2025-S1)
