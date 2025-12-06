@@ -33,8 +33,30 @@ https://data.iledefrance.fr/explore/dataset/bpe2016/table/?disjunctive.nom_com (
 https://public.opendatasoft.com/explore/assets/bpe-2018/export/ (2018)
 https://data.iledefrance.fr/explore/dataset/bpe23-nettoye/information/ (2024)
 
+note for BPE: Currently our database for BPE is too large to commit to Github thus it is not available in our data_git folder
+
 
 ###Sources description 
+FILOSOFI
+
+The filosofi database, offers specific estimates of household income, poverty, and inequality at area levels such as IRIS. It combines fiscal data and social benefit data to estimate income before and after redistribution, adjusted per household unit to account for household size and structure. Filosofi replaces older local income datasets and provides useful indicators like income deciles, medians, poverty rates and inequality measures like the Gini coefficient. 
+
+IRIS Historical Change
+
+The "Historique des codes IRIS" dataset shows a cross-reference of IRIS codes in France from 1999-2022, revealing how these neighbourhood-level statistical units have changed over time. It offers a "table de passage" that links old and new IRIS identifiers following boundary modifications, splits, or regroupings. This resource allows for researches to align socio-economic data over the years despite changes in IRIS definitions.
+
+IRIS Shapefile
+
+The IRIS shapefile provides the official polygon boundaries for all IRIS units in France. The 2020 "France entiere" shapefile offers total coverage of France and is the standard geographic reference for mapping IRIS-level data. It is broadly used to link datasets (like FILOSOFI and DVF) to their corresponding neighbourhoods.
+
+DVF
+
+The "Demandes de Valeurs Foncieres" (DVF) dataset, which is available through data.gouv.fr, contains property transaction records for France and includes geographic information when available. We have data sets from 2014-2018 and 2020-2025. DVF provides valuable information such as transaction dates, sale values, property types, surface areas. It can be used to analyse real estate information, such as change in price per square metre. In our project, DVF enables us to construct indicators of housing price changes at the IRIS level.
+
+BPE
+
+The "Base Permanente des Equipements" (BPE) dataset for Ile de France. It provides an inventory of public and private facilities, amenities and commercial establishments for the region of France.
+
 
 ####Data Information Tables
 ```{r}
