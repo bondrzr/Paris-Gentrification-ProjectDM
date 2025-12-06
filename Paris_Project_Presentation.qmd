@@ -26,7 +26,12 @@ In the zip file -> Downloads\CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01\CONTOURS-IRI
 
 4) DVF
 https://www.data.gouv.fr/datasets/demandes-de-valeurs-foncieres-geolocalisees (2020-S2-2025-S1)
-https://data.cquest.org/dgfip_dvf/ click on dvf-2014-2018.csv.gz (2014-2018)                           
+https://data.cquest.org/dgfip_dvf/ click on dvf-2014-2018.csv.gz (2014-2018) 
+
+5) BPE
+https://public.opendatasoft.com/explore/assets/bpe-2018/export/ (2018)
+
+
 ###Sources description 
 
 ####Data Information Tables
