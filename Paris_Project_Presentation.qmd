@@ -63,6 +63,40 @@ colinfo_dvf <-
 colinfo_dvf |>
   knitr::kable()
 ```
+```{r}
+library(data.table)
+library(dplyr)
+
+file <- "data_git/filo_final.csv"
+
+cols  <- fread(file, nrows = 0)
+nrows <- fread(file, select = 1)[, .N]
+size_mb <- file.info(file)$size / (1024^2)
+
+summary_dvf <-
+  data.frame(
+    file         = basename(file),
+    rows         = nrows,
+    columns      = ncol(cols),
+    file_size_mb = round(size_mb, 2),
+    stringsAsFactors = FALSE
+  )
+
+summary_dvf |>
+  knitr::kable()
+
+colinfo_dvf <-
+  data.frame(
+    column = names(cols),
+    type   = sapply(cols, \(x) class(x)[1]),
+    stringsAsFactors = FALSE
+  ) |>
+  arrange(column)
+
+colinfo_dvf |>
+  knitr::kable()
+```
+
 
 
 #####Important Variables Description
