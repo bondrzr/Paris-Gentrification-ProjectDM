@@ -153,3 +153,95 @@ D_rev2021_IDF <- D_rev2021 %>%
 nrow(D_rev2021_IDF)
 ```
 
+```{r}
+library(dplyr)
+library(janitor)
+
+years <- c(2015, 2016, 2018, 2020, 2021)
+
+dfs <- mget(paste0("D_rev", years, "_IDF")) 
+names(dfs) <- years
+
+filo_all <- purrr::imap_dfr(
+  dfs,
+  ~ .x %>%
+    clean_names() %>%             
+    mutate(annee = as.integer(.y))
+)
+
+glimpse(filo_all)
+filo_all %>% count(annee)
+
+```
+```{r}
+table_passage <- fread("DATA/table_passage_1999_2022.csv")
+
+
+
+table_passage <- table_passage %>% clean_names()
+names(table_passage)
+
+
+```
+
+```{r}
+
+library(dplyr)
+
+harmonize_to_iris2020 <- function(df, year) {
+  
+  df_clean <- df %>%
+    clean_names() %>%        
+    rename(iris_old = iris)  
+  
+  
+  if (year %in% c(2020, 2021)) {
+    
+    res <- df_clean %>%
+      mutate(
+        iris_2020 = iris_old,   
+        annee     = year
+      )
+    
+  } else {
+    
+    col_year <- paste0("code_iris_", year)   
+    
+   
+    passage_sub <- table_passage %>%
+      select(code_iris_2020, !!col_year)
+    
+    res <- df_clean %>%
+      left_join(
+        passage_sub,
+        by = c("iris_old" = col_year)   
+      ) %>%
+      mutate(
+        iris_2020 = if_else(is.na(code_iris_2020), iris_old, code_iris_2020),
+        annee     = year
+      ) %>%
+      select(-code_iris_2020)
+  }
+  
+  return(res)
+}
+
+
+```
+
+```{r}
+filo2015 <- harmonize_to_iris2020(D_rev2015_IDF, 2015)
+filo2016 <- harmonize_to_iris2020(D_rev2016_IDF, 2016)
+filo2018 <- harmonize_to_iris2020(D_rev2018_IDF, 2018)
+filo2020 <- harmonize_to_iris2020(D_rev2020_IDF, 2020)
+filo2021 <- harmonize_to_iris2020(D_rev2021_IDF, 2021)
+
+filo_all2 <- dplyr::bind_rows(filo2015, filo2016, filo2018, filo2020, filo2021)
+
+# Vérif :
+filo_all %>% count(annee)
+length(unique(filo_all$iris_2020))
+
+
+```
+
