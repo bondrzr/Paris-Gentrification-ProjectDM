@@ -174,7 +174,8 @@ filo_all %>% count(annee)
 
 ```
 ```{r}
-table_passage <- fread("DATA/table_passage_1999_2022.csv")
+library(data.table)
+table_passage <- fread("C:/Users/matei/Desktop/ParisGentrificationDM/Paris-Gentrification-ProjectDM/DATA/table_passage_1999_2022.csv")
 
 
 
@@ -236,7 +237,7 @@ filo2018 <- harmonize_to_iris2020(D_rev2018_IDF, 2018)
 filo2020 <- harmonize_to_iris2020(D_rev2020_IDF, 2020)
 filo2021 <- harmonize_to_iris2020(D_rev2021_IDF, 2021)
 
-filo_all2 <- dplyr::bind_rows(filo2015, filo2016, filo2018, filo2020, filo2021)
+filo_final <- dplyr::bind_rows(filo2015, filo2016, filo2018, filo2020, filo2021)
 
 # Vérif :
 filo_all %>% count(annee)
@@ -244,4 +245,8 @@ length(unique(filo_all$iris_2020))
 
 
 ```
+```{r}
+write.csv(filo_final, "C:/Users/matei/Desktop/ParisGentrificationDM/Paris-Gentrification-ProjectDM/data_git/filo_final.csv", row.names=FALSE)
+```
+
 
