@@ -29,7 +29,9 @@ https://www.data.gouv.fr/datasets/demandes-de-valeurs-foncieres-geolocalisees (2
 https://data.cquest.org/dgfip_dvf/ click on dvf-2014-2018.csv.gz (2014-2018) 
 
 5) BPE
+https://data.iledefrance.fr/explore/dataset/bpe2016/table/?disjunctive.nom_com (2016)
 https://public.opendatasoft.com/explore/assets/bpe-2018/export/ (2018)
+https://data.iledefrance.fr/explore/dataset/bpe23-nettoye/information/ (2024)
 
 
 ###Sources description 
@@ -141,7 +143,7 @@ For the DVF File we had 2 big databases each of them covering multiple years (2n
 The first one was the easiest as it had longitude and latitude, the first part was always to keep the IDF area in our analysis excluding the rest and keeping the columns that we might use in our analysis. Then we tried to get rid of "outliers" this could be when there is unavailable data or some that doesn't make any sense. The biggest part was going from long-lat to IRIS point for this we used a Iris shapefile of france in 2020 because it matched for most of our databases ( our data had to be modified into lambert 93 to match).
 
 #######Research Question
-Our research question is: How does gentrification in the Paris area affect the "Tissu comercial" (commerical fabric)?
+Our research question is: How does gentrification in the Paris area affect the "Tissu comercial"?
 
 The idea is to see how gentrification can reshape neighbourhoods in terms of retail/service supply. As higher income populations move into formerly lower income or mixed income areas, we expect to observe a shift in the available businesses and more generally the commercial mix: growth of cafes, restaurants, shops, boutiques, coworking spaces etc with a subsequent decrease in traditional proximity retail. We will also attempt to observe whether new types of businesses emerge specifically tailored to a wealthier population.
 
