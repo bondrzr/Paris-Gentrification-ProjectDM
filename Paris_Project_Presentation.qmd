@@ -109,7 +109,7 @@ IRIS -> CODE IRIS(Îlots regroupés pour l'information statistique) this is an I
 
 Prix_M2 -> this is the price per square meter we created this from our DVF file by dividind Price of "Valeur foncière" by the surface of the place. 
 
-N_ventes -> this is the number of sales that have occurred in the neighborhood corresponding to the IRIS code
+N_ventes -> this is the number of sales that have occurred in the neighbourhood corresponding to the IRIS code
 
 Income per household unit variables 
   Mediane -> Median income per household unit  
@@ -141,9 +141,15 @@ For the DVF File we had 2 big databases each of them covering multiple years (2n
 The first one was the easiest as it had longitude and latitude, the first part was always to keep the IDF area in our analysis excluding the rest and keeping the columns that we might use in our analysis. Then we tried to get rid of "outliers" this could be when there is unavailable data or some that doesn't make any sense. The biggest part was going from long-lat to IRIS point for this we used a Iris shapefile of france in 2020 because it matched for most of our databases ( our data had to be modified into lambert 93 to match).
 
 #######Research Question
-Our research question is: How does gentrification in the Paris area affect the "Tissu comercial"?
+Our research question is: How does gentrification in the Paris area affect the "Tissu comercial" (commerical fabric)?
 
-The idea is to see how gentrification can reshape neighbourhood in terms of retail/service supply. With this new (wealthier) population coming into these areas can we observe a shift in the available businesses and more generally the commercial mix (more café restaurant and decline in traditional proximity retail). If they exist what are the new business catered for this new population.
+The idea is to see how gentrification can reshape neighbourhoods in terms of retail/service supply. As higher income populations move into formerly lower income or mixed income areas, we expect to observe a shift in the available businesses and more generally the commercial mix: growth of cafes, restaurants, shops, boutiques, coworking spaces etc with a subsequent decrease in traditional proximity retail. We will also attempt to observe whether new types of businesses emerge specifically tailored to a wealthier population.
+
+We will do this by firstly identifying areas (IRIS units) in which clear signs of gentrification have occurred. To do this we will create some indicators for price per sqm, median income levels, poverty rates, income disparity etc. Then using these to identify areas that for example have been previously below the average price per sqm and are now above that, we can note them as gentrified areas.
+
+Once we have identified which IRIS units have undergone gentrification, we will observe changes in the "tissu commerical" of these areas using the BPE (Base Permanente des Equipements). The BPE dataset is a record of the quantity and type of establishments. By analysing changes in the BPE for our identified gentrified areas we can see whether new business categories emerge as the distribution of income changes, which type of businesses increase in quantity, which types decline.
+
+This method of first identifying gentrified areas, then analysing the change in types and quantities of businesses, allows us to observe the effect of gentrification on the "tissu commerical" of Paris. 
 
 ########Graphical Representation
 In the Paris_gentri_Maps folder you can see a representation of the distribution of price per sqm on a map of Paris.
