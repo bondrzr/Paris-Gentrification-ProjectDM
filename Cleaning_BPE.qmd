@@ -1,0 +1,127 @@
+---
+title: "Cleaning BPE"
+author: "Paul"
+format: html
+---
+
+
+# BPE for 2024
+```{r}
+
+
+library(sf)
+library(dplyr)
+library(vroom)
+library(here)
+
+iris2020 <- st_read(
+  here("DATA", "CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020", "CONTOURS-IRIS.shp")
+) |>
+  st_transform(2154)
+
+
+
+bpe_keep <- c(
+  "AN", "DEPCOM", "DEP", "REG", "LIBCOM", 
+  "DCIRIS", "LONGITUDE", "LATITUDE",
+  "LAMBERT_X", "LAMBERT_Y", "QUALITE_XY", "QUALITE_GEOLOC", "EPSG",
+  "DOM", "SDOM", "TYPEQU", "TYPE", "CATEGORIE"
+)
+
+BPE_IDF_2024 <- vroom(
+  here("DATA", "BPE24.csv"),
+  delim = ";",
+  col_select = all_of(bpe_keep)
+) |>
+  filter(DEP %in% c("75","92","93","94","78","91","95","77"))
+
+BPE_Paris_2024 <- BPE_IDF_2024 |>
+  filter(DEP == "75")
+
+
+BPE_IDF_2024_sf <- BPE_IDF_2024 |>
+  filter(!is.na(LAMBERT_X), !is.na(LAMBERT_Y)) |>
+  st_as_sf(
+    coords = c("LAMBERT_X", "LAMBERT_Y"),
+    crs    = 2154,
+    remove = FALSE
+  )
+
+
+
+iris2020_idf_min <- iris2020[, c("CODE_IRIS", "NOM_IRIS")]
+
+BPE_IDF_2024_iris <- st_join(
+  BPE_IDF_2024_sf,
+  iris2020_idf_min,
+  left = TRUE
+)
+
+
+BPE_IDF_2024_iris <- BPE_IDF_2024_iris |>
+  filter(!is.na(CODE_IRIS)) |>
+  mutate(
+    annee    = AN,
+    iris_2020 = CODE_IRIS
+  )
+
+
+
+BPE_Paris_2024_iris <- BPE_IDF_2024_iris |>
+  filter(DEP == "75")
+
+```
+
+
+
+
+#BPE for 2016
+```{r}
+
+library(dplyr)
+library(sf)
+library(vroom)
+library(tidyr)
+library(here)
+
+iris2020 <- st_read(
+  here("DATA", "CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020", "CONTOURS-IRIS.shp")
+) |>
+  st_transform(2154)
+
+BPE_2016 <- vroom(
+  here("DATA", "BPE2016.csv"),
+  delim = ";"
+)
+
+BPE_2016_clean <- BPE_2016 |>
+  separate(`Geo Point`, into = c("latitude", "longitude"),
+           sep = ",", convert = TRUE)
+
+BPE_2016_sf <- BPE_2016_clean |>
+  filter(!is.na(latitude), !is.na(longitude)) |>
+  st_as_sf(
+    coords = c("longitude", "latitude"),
+    crs = 4326,   # WGS84
+    remove = FALSE
+  ) |>
+  st_transform(2154)   # pour matcher les IRIS 2020
+
+bpe2016_iris <- st_join(
+  BPE_2016_sf,
+  iris2020[, c("CODE_IRIS", "NOM_IRIS")],
+  join = st_within,
+  left = TRUE
+)
+
+bpe2016_iris <- bpe2016_iris |>
+  filter(!is.na(CODE_IRIS)) |>
+  mutate(
+    annee = 2016,
+    iris_2020 = CODE_IRIS
+  )
+
+```
+
+
+
