@@ -142,4 +142,3 @@ dvf2014_18 <- fread(
 
 names("DATA/dvf_14_18.csv")
 ```
-

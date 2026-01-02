@@ -153,6 +153,7 @@ D_rev2021_IDF <- D_rev2021 %>%
 nrow(D_rev2021_IDF)
 ```
 
+#Fusion 
 ```{r}
 library(dplyr)
 library(janitor)
@@ -247,6 +248,7 @@ length(unique(filo_all$iris_2020))
 ```
 ```{r}
 write.csv(filo_final, "C:/Users/matei/Desktop/ParisGentrificationDM/Paris-Gentrification-ProjectDM/data_git/filo_final.csv", row.names=FALSE)
+
 ```
 
 

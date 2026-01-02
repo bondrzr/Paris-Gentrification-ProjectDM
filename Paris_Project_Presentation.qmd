@@ -8,6 +8,7 @@ format: html
 https://github.com/bondrzr/Paris-Gentrification-ProjectDM.git
 
 ##Link to sources 
+
 1) FILOSOFI
 https://www.insee.fr/fr/statistiques/3560118 (2015)
 https://www.insee.fr/fr/statistiques/4295611 (2016)
@@ -159,10 +160,15 @@ Every cleaning operation has it's own qmd file for readers to be able to use dat
 
 For FILOSOFI it was quite simple the objective was solely to keep the departments that interest us for our analysis and renaming columns for the names to be the same across years.
 For the joining part we used a passage table we chose to keep the 2020 IRIS CODE As our time frame. We used this table to transform IRIS number from previous years to the 2020 version or no change if there was no change done in the irises.
+After that we joined all the data into one big table for further analysis later on.
 
 For the DVF File we had 2 big databases each of them covering multiple years (2nd semester of 2020- 1st semester of 2025) and 2014-2018.
 
 The first one was the easiest as it had longitude and latitude, the first part was always to keep the IDF area in our analysis excluding the rest and keeping the columns that we might use in our analysis. Then we tried to get rid of "outliers" this could be when there is unavailable data or some that doesn't make any sense. The biggest part was going from long-lat to IRIS point for this we used a Iris shapefile of france in 2020 because it matched for most of our databases ( our data had to be modified into lambert 93 to match).
+
+We haven't been able to properly finish with older data-base as it doesnt have any long-Latt info so we'll have to do some parcel reattachment which might be a little harder. 
+
+For BPE it was quite similar to the DVF, even tough we had IRIS info they were from years different from 2020 but thankfully we had the geographical location in coordinates which allowed us to spatially reattach the businesses to the 2020iris points. We also filtered to fit our geographical are ( IFF-Paris) 
 
 #######Research Question
 Our research question is: How does gentrification in the Paris area affect the "Tissu comercial"?

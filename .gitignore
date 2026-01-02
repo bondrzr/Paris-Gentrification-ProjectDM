@@ -11,3 +11,14 @@ dvf2014-2018.csv
 DVFcleaning.rmarkdown
 dvf.csv
 table_passage_1999_2022.csv
+Cleaning.R
+BASE_TD_FILO_DEC_IRIS_2018.csv
+BASE_TD_FILO_IRIS_2021_DEC.csv
+ValeursFoncieres-2022.txt
+valeursfoncieres-2014.txt
+data_git/
+*.zip
+*.html
+DATA_Raw/
+*.csv
+*.txt
