@@ -19,6 +19,13 @@ valeursfoncieres-2014.txt
 data_git/
 *.zip
 *.html
-DATA_Raw/
+
 *.csv
 *.txt
+
+DATA_Raw/*
+!DATA_Raw/BASE_TD_FILO_DEC_IRIS_2015.xls
+!DATA_Raw/BASE_TD_FILO_DEC_IRIS_2016.xls
+!DATA_Raw/BASE_TD_FILO_DEC_IRIS_2018.xlsx
+!DATA_Raw/BASE_TD_FILO_DEC_IRIS_2020.xlsx
+!DATA_Raw/BASE_TD_FILO_IRIS_2021_DEC.xlsx
