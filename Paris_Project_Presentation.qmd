@@ -4,40 +4,47 @@ author: "Paul Joahny"
 format: html
 ---
 
-#Link git hub project 
-https://github.com/bondrzr/Paris-Gentrification-ProjectDM.git
+#Link git hub project
+
+<https://github.com/bondrzr/Paris-Gentrification-ProjectDM.git>
 
 ##Link to sources 
 
 1) FILOSOFI
-https://www.insee.fr/fr/statistiques/3560118 (2015)
-https://www.insee.fr/fr/statistiques/4295611 (2016)
-https://www.insee.fr/fr/statistiques/5055909#consulter (2018)
-https://www.insee.fr/fr/statistiques/7233950 (2020)
-https://www.insee.fr/fr/statistiques/8229323#documentation (2021)
 
-2) IRIS historical change 
-https://www.data.gouv.fr/datasets/historique-des-codes-iris?resource_id=80cc1fa3-2339-4b04-9abc-d0ca84116921
+<https://www.insee.fr/fr/statistiques/3560118> (2015)
+<https://www.insee.fr/fr/statistiques/4295611> (2016)
+<https://www.insee.fr/fr/statistiques/5055909#consulter> (2018)
+<https://www.insee.fr/fr/statistiques/7233950> (2020)
+<https://www.insee.fr/fr/statistiques/8229323#documentation> (2021)
+
+2) IRIS historical change
+
+<https://www.data.gouv.fr/datasets/historique-des-codes-iris?resource_id=80cc1fa3-2339-4b04-9abc-d0ca84116921>
 download  table synthétique 
 
 3) IRIS Shapefile 
-https://geoservices.ign.fr/telechargement-api/CONTOURS-IRIS?
+
+<https://geoservices.ign.fr/telechargement-api/CONTOURS-IRIS?>
 filter for "France entière" and "shapefile" there's only one left for 2020. 
 In the zip file -> Downloads\CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01\CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01\CONTOURS-IRIS\1_DONNEES_LIVRAISON_2020-12-00282\CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020" You need to keep the files in it's entirety for the "CONTOURS-IRIS.shp" to function.
 
 4) DVF
-https://www.data.gouv.fr/datasets/demandes-de-valeurs-foncieres-geolocalisees (2020-S2-2025-S1)
-https://data.cquest.org/dgfip_dvf/ click on dvf-2014-2018.csv.gz (2014-2018) 
+
+<https://www.data.gouv.fr/datasets/demandes-de-valeurs-foncieres-geolocalisees> (2020-S2-2025-S1)
+<https://data.cquest.org/dgfip_dvf/> click on dvf-2014-2018.csv.gz (2014-2018) 
 
 5) BPE
-https://data.iledefrance.fr/explore/dataset/bpe2016/table/?disjunctive.nom_com (2016)
-https://public.opendatasoft.com/explore/assets/bpe-2018/export/ (2018)
-https://data.iledefrance.fr/explore/dataset/bpe23-nettoye/information/ (2024)
+
+<https://data.iledefrance.fr/explore/dataset/bpe2016/table/?disjunctive.nom_com> (2016)
+<https://public.opendatasoft.com/explore/assets/bpe-2018/export/> (2018)
+<https://data.iledefrance.fr/explore/dataset/bpe23-nettoye/information/> (2024)
 
 note for BPE: Currently our database for BPE is too large to commit to Github thus it is not available in our data_git folder
 
 
 ###Sources description 
+
 FILOSOFI
 
 The filosofi database, offers specific estimates of household income, poverty, and inequality at area levels such as IRIS. It combines fiscal data and social benefit data to estimate income before and after redistribution, adjusted per household unit to account for household size and structure. Filosofi replaces older local income datasets and provides useful indicators like income deciles, medians, poverty rates and inequality measures like the Gini coefficient. 
