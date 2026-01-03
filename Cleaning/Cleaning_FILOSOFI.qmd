@@ -14,7 +14,7 @@ library(readr)
 
 #2015
 ```{r}
-D_rev2015 <- readxl::read_excel(here("DATA" , "BASE_TD_FILO_DEC_IRIS_2015.xls"), skip = 4)
+D_rev2015 <- readxl::read_excel(here("DATA_Raw" , "BASE_TD_FILO_DEC_IRIS_2015.xls"), skip = 4)
 names(D_rev2015)
 
 D_rev2015_clean <- D_rev2015 %>%
@@ -174,9 +174,12 @@ glimpse(filo_all)
 filo_all %>% count(annee)
 
 ```
+
 ```{r}
 library(data.table)
-table_passage <- fread("C:/Users/matei/Desktop/ParisGentrificationDM/Paris-Gentrification-ProjectDM/DATA/table_passage_1999_2022.csv")
+table_passage <- fread(
+  here("DATA_Raw", "table_passage_1999_2022.csv")
+)
 
 
 
@@ -246,8 +249,12 @@ length(unique(filo_all$iris_2020))
 
 
 ```
+
 ```{r}
-write.csv(filo_final, "C:/Users/matei/Desktop/ParisGentrificationDM/Paris-Gentrification-ProjectDM/data_git/filo_final.csv", row.names=FALSE)
+saveRDS(
+  filo_final,
+  here("DATA_Processed", "filo_final.rds")
+)
 
 ```
 
