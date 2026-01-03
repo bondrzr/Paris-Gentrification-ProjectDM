@@ -9,6 +9,7 @@ library(here)
 library(readxl)
 library(janitor)
 library(dplyr)
+library(readr)
 ```
 
 #2015
@@ -42,9 +43,8 @@ nrow(D_rev2015_IDF)
 #2016
 ```{r}
 here::i_am("Paris-Gentrification-ProjectDM.Rproj")
-library(here)
-library(readr)
-D_rev2016 <- readxl::read_excel(here("DATA", "BASE_TD_FILO_DEC_IRIS_2016.xls"), skip = 4)
+
+D_rev2016 <- readxl::read_excel(here("DATA_Raw", "BASE_TD_FILO_DEC_IRIS_2016.xls"), skip = 4)
 
 D_rev2016_clean <- D_rev2016 %>%
   janitor::clean_names() %>%
@@ -70,7 +70,7 @@ nrow(D_rev2016_IDF)
 
 #2018
 ```{r}
-D_rev2018 <- readxl::read_excel(here("DATA" , "BASE_TD_FILO_DEC_IRIS_2018.xlsx"), skip = 4)
+D_rev2018 <- readxl::read_excel(here("DATA_Raw" , "BASE_TD_FILO_DEC_IRIS_2018.xlsx"), skip = 4)
 names(D_rev2018)
 
 
@@ -102,7 +102,7 @@ nrow(D_rev2018_IDF)
 here::i_am("Paris-Gentrification-ProjectDM.Rproj")
 library(here)
 library(readr)
-D_rev2020 <- readxl::read_excel(here("DATA", "BASE_TD_FILO_DEC_IRIS_2020.xlsx"), skip = 4)
+D_rev2020 <- readxl::read_excel(here("DATA_Raw", "BASE_TD_FILO_DEC_IRIS_2020.xlsx"), skip = 4)
 
 D_rev2020 <- D_rev2020 %>%
   janitor::clean_names() %>%
@@ -128,7 +128,7 @@ nrow(D_rev2020_IDF)
 
 #2021
 ```{r}
-D_rev2021 <- readxl::read_excel(here("DATA" , "BASE_TD_FILO_IRIS_2021_DEC.xlsx"), skip = 4)
+D_rev2021 <- readxl::read_excel(here("DATA_Raw" , "BASE_TD_FILO_IRIS_2021_DEC.xlsx"), skip = 4)
 names(D_rev2021)
 
 D_rev2021 <- D_rev2021 %>%

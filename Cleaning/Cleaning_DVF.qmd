@@ -9,6 +9,7 @@ format: html
 library(data.table)
 library(sf)
 library(dplyr)
+library(here)
 ```
 
 #Keeping the departements we want to look at, same for the columns 
@@ -37,19 +38,21 @@ cols_keep <- c(
 
 ```
 
+
 #Getting rid of problematic data 
 ```{r}
 dvf <- fread(
-  "dvf.csv",
-  select = cols_keep           
+  here("DATA_Raw", "dvf.csv"),
+  select = cols_keep
 )[
-  code_departement %in% idf &                          
-    type_local %in% c("Appartement", "Maison") &          
-    !is.na(surface_reelle_bati) &                         
-    surface_reelle_bati > 9 & surface_reelle_bati < 500 & 
-    valeur_fonciere > 5000 & valeur_fonciere < 5e6 &      
-    !is.na(longitude) & !is.na(latitude)                  
+  code_departement %in% idf &
+    type_local %in% c("Appartement", "Maison") &
+    !is.na(surface_reelle_bati) &
+    surface_reelle_bati > 9 & surface_reelle_bati < 500 &
+    valeur_fonciere > 5000 & valeur_fonciere < 5e6 &
+    !is.na(longitude) & !is.na(latitude)
 ]
+
 ```
 
 
@@ -73,9 +76,15 @@ dvf_sf <- st_as_sf(
 #loading up iris shape file of 2020
 ```{r}
 
-iris2020 <- st_read("DATA/CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020/CONTOURS-IRIS.shp") |>
+iris2020 <- st_read(
+  here(
+    "DATA_Raw",
+    "CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020",
+    "CONTOURS-IRIS.shp"
+  ),
+  quiet = TRUE
+) |>
   st_transform(2154)
-
 
 names(iris2020)
 
@@ -109,14 +118,23 @@ prix_iris_2020_25 <- dvf_iris |>
   st_drop_geometry() |>
   group_by(CODE_IRIS, annee) |>
   summarise(
-    prix_m2_med  = median(prix_m2, na.rm = TRUE),  
-    prix_m2_mean = mean(prix_m2, na.rm = TRUE),    
-    n_ventes     = n(),                            
+    prix_m2_med  = median(prix_m2, na.rm = TRUE),
+    prix_m2_mean = mean(prix_m2, na.rm = TRUE),
+    n_ventes     = n(),
     .groups = "drop"
-  ) 
-prix_iris_2020_25 <- prix_iris_2020_25 |>
-  filter(n_ventes >= 1)    
+  ) |>
+  filter(n_ventes >= 1)
 
+dir.create(
+  here("DATA_Processed"),
+  showWarnings = FALSE,
+  recursive = TRUE
+)
+
+saveRDS(
+  prix_iris_2020_25,
+  here("DATA_Processed", "prix_iris_2020_25.rds")
+)
 ```
 
 ```{r}
