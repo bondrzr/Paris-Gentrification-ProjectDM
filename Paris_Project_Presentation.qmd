@@ -124,6 +124,7 @@ colinfo_dvf |>
 
 
 #####Important Variables Description
+
 IRIS -> CODE IRIS(Îlots regroupés pour l'information statistique) this is an INSEE indicator that regroups 10K inhabitants that facilitates statiscal analysis. We'll use it as proxy for parisian neighbourhoods.
 
 Prix_M2 -> this is the price per square meter we created this from our DVF file by dividind Price of "Valeur foncière" by the surface of the place. 
@@ -150,6 +151,7 @@ Part_des_menages_fiscaux_imposes_percent -> Share of taxable fiscal households
 
 
 ######Data Joining/Cleaning Description
+
 Every cleaning operation has it's own qmd file for readers to be able to use data as we have found.
 
 For FILOSOFI it was quite simple the objective was solely to keep the departments that interest us for our analysis and renaming columns for the names to be the same across years.
@@ -165,6 +167,7 @@ We haven't been able to properly finish with older data-base as it doesnt have a
 For BPE it was quite similar to the DVF, even tough we had IRIS info they were from years different from 2020 but thankfully we had the geographical location in coordinates which allowed us to spatially reattach the businesses to the 2020iris points. We also filtered to fit our geographical are ( IFF-Paris) 
 
 #######Research Question
+
 Our research question is: How does gentrification in the Paris area affect the "Tissu comercial"?
 
 The idea is to see how gentrification can reshape neighbourhoods in terms of retail/service supply. As higher income populations move into formerly lower income or mixed income areas, we expect to observe a shift in the available businesses and more generally the commercial mix: growth of cafes, restaurants, shops, boutiques, coworking spaces etc with a subsequent decrease in traditional proximity retail. We will also attempt to observe whether new types of businesses emerge specifically tailored to a wealthier population.
@@ -176,4 +179,5 @@ Once we have identified which IRIS units have undergone gentrification, we will 
 This method of first identifying gentrified areas, then analysing the change in types and quantities of businesses, allows us to observe the effect of gentrification on the "tissu commerical" of Paris. 
 
 ########Graphical Representation
+
 In the Paris_gentri_Maps folder you can see a representation of the distribution of price per sqm on a map of Paris.
