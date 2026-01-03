@@ -63,64 +63,58 @@ The "Base Permanente des Equipements" (BPE) dataset for Ile de France. It provid
 ```{r}
 library(data.table)
 library(dplyr)
+library(here)
 
-file <- "DATA_Processed/prix_iris_2020_25.rds"
+file <- here("DATA_Processed", "prix_iris_2020_25.rds")
 
-cols  <- fread(file, nrows = 0)
-nrows <- fread(file, select = 1)[, .N]
-size_mb <- file.info(file)$size / (1024^2)
+df <- readRDS(file)
 
-summary_dvf <-
-  data.frame(
-    file         = basename(file),
-    rows         = nrows,
-    columns      = ncol(cols),
-    file_size_mb = round(size_mb, 2),
-    stringsAsFactors = FALSE
-  )
+summary_dvf <- data.frame(
+  file         = basename(file),
+  rows         = nrow(df),
+  columns      = ncol(df),
+  file_size_mb = round(file.info(file)$size / (1024^2), 2),
+  stringsAsFactors = FALSE
+)
 
 summary_dvf |>
   knitr::kable()
 
-colinfo_dvf <-
-  data.frame(
-    column = names(cols),
-    type   = sapply(cols, \(x) class(x)[1]),
-    stringsAsFactors = FALSE
-  ) |>
+colinfo_dvf <- data.frame(
+  column = names(df),
+  type   = sapply(df, \(x) class(x)[1]),
+  stringsAsFactors = FALSE
+) |>
   arrange(column)
 
 colinfo_dvf |>
   knitr::kable()
 ```
+
 ```{r}
 library(data.table)
 library(dplyr)
 
-file <- "DATA_Processed/filo_final.rds"
+file <- here("DATA_Processed", "filo_final.rds")
 
-cols  <- fread(file, nrows = 0)
-nrows <- fread(file, select = 1)[, .N]
-size_mb <- file.info(file)$size / (1024^2)
+df <- readRDS(file)
 
-summary_dvf <-
-  data.frame(
-    file         = basename(file),
-    rows         = nrows,
-    columns      = ncol(cols),
-    file_size_mb = round(size_mb, 2),
-    stringsAsFactors = FALSE
-  )
+summary_dvf <- data.frame(
+  file         = basename(file),
+  rows         = nrow(df),
+  columns      = ncol(df),
+  file_size_mb = round(file.info(file)$size / (1024^2), 2),
+  stringsAsFactors = FALSE
+)
 
 summary_dvf |>
   knitr::kable()
 
-colinfo_dvf <-
-  data.frame(
-    column = names(cols),
-    type   = sapply(cols, \(x) class(x)[1]),
-    stringsAsFactors = FALSE
-  ) |>
+colinfo_dvf <- data.frame(
+  column = names(df),
+  type   = sapply(df, \(x) class(x)[1]),
+  stringsAsFactors = FALSE
+) |>
   arrange(column)
 
 colinfo_dvf |>
