@@ -64,7 +64,7 @@ The "Base Permanente des Equipements" (BPE) dataset for Ile de France. It provid
 library(data.table)
 library(dplyr)
 
-file <- "Data_Processed/prix_iris_2020-25.csv"
+file <- "DATA_Processed/prix_iris_2020-25.rds"
 
 cols  <- fread(file, nrows = 0)
 nrows <- fread(file, select = 1)[, .N]
@@ -97,7 +97,7 @@ colinfo_dvf |>
 library(data.table)
 library(dplyr)
 
-file <- "Data_Processed/filo_final.csv"
+file <- "DATA_Processed/filo_final.rds"
 
 cols  <- fread(file, nrows = 0)
 nrows <- fread(file, select = 1)[, .N]
