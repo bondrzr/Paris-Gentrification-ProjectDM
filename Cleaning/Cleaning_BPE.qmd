@@ -135,5 +135,87 @@ saveRDS(
 
 ```
 
+#BPE for 2018
 
+```{r}
+table_passage <- fread(
+  here("DATA_Raw", "table_passage_1999_2022.csv")
+) %>%
+  clean_names()
+```
+
+```{r}
+
+BPE_Paris_2018 <- BPE_2018 %>%
+  clean_names() %>%
+  rename(
+    iris_old = code_iris,
+    annee    = annee
+  ) %>%
+  mutate(
+    iris_old = as.character(iris_old),
+    dep      = substr(iris_old, 1, 2)
+  ) %>%
+  filter(dep == "75")
+
+saveRDS(
+  BPE_Paris_2018,
+  here("DATA_Raw", "BPE_Paris_2018.rds")
+)
+```
+
+```{r}
+
+BPE_Paris_2018 <- BPE_Paris_2018 %>%
+  mutate(
+    iris_old = gsub("_", "", iris_old)
+  )
+
+BPE_Paris_2018_2020 <- BPE_Paris_2018 %>%
+  left_join(
+    table_passage %>%
+      select(code_iris_2018, code_iris_2020),
+    by = c("iris_old" = "code_iris_2018")
+  ) %>%
+  mutate(
+    iris_2020 = if_else(
+      is.na(code_iris_2020),
+      iris_old,          # IRIS inchangé
+      code_iris_2020     # IRIS modifié
+    )
+  ) %>%
+  select(-code_iris_2020)
+
+
+```
+
+```{r}
+library(sf)
+
+iris2020 <- st_read(
+  here(
+    "DATA_Raw",
+    "CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020",
+    "CONTOURS-IRIS.shp"
+  ),
+  quiet = TRUE
+) |>
+  st_transform(2154) |>
+  filter(substr(CODE_IRIS, 1, 2) == "75") |>
+  select(CODE_IRIS, NOM_IRIS)
+
+```
+
+```{r}
+BPE_Paris_2018_iris <- iris2020 %>%
+  left_join(
+    BPE_Paris_2018_2020,
+    by = c("CODE_IRIS" = "iris_2020")
+  )
+
+saveRDS(
+  BPE_Paris_2018_iris,
+  here("DATA_Processed", "BPE_Paris_2018_iris.rds")
+)
+```
 
