@@ -30,3 +30,6 @@ DATA_Raw/*
 !DATA_Raw/BASE_TD_FILO_DEC_IRIS_2020.xlsx
 !DATA_Raw/BASE_TD_FILO_IRIS_2021_DEC.xlsx
 !DATA_Raw/table_passage_1999_2022.csv
+!DATA_Raw/BPE_Paris_2016.rds
+!DATA_Raw/BPE_Paris_2024.rds
+

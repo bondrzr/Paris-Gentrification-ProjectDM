@@ -72,7 +72,7 @@ BPE_Paris_2024_iris <- st_join(
 
 saveRDS(
   BPE_Paris_2024_iris,
-  here("DATA_Raw", "BPE_Paris_2024_iris.rds")
+  here("DATA_Processed", "BPE_Paris_2024_iris.rds")
 )
 
 ```
