@@ -1,0 +1,42 @@
+---
+title: "DVF_Analysis"
+format: html
+author: "Matei Vasile"
+---
+
+```{r}
+library(data.table)
+library(dplyr)
+library(here)
+
+file <- here("DATA_Processed", "prix_iris_2020_25.rds")
+
+df <- readRDS(file)
+
+yoy <- df %>%
+  arrange(CODE_IRIS, annee) %>%
+  group_by(CODE_IRIS) %>%
+  mutate(growth = prix_m2_med / lag(prix_m2_med) - 1) %>%
+  ungroup() %>%
+  filter(!is.na(growth))
+
+bench <- yoy %>%
+  group_by(annee) %>%
+  summarise(avg_growth = mean(growth, na.rm = TRUE), .groups = "drop")
+
+rel <- yoy %>%
+  left_join(bench, by = "annee") %>%
+  mutate(rel_growth = growth - avg_growth)
+
+iris_overall <- rel %>%
+  group_by(CODE_IRIS) %>%
+  summarise(
+    mean_rel_growth = mean(rel_growth, na.rm = TRUE),
+    n_years = n(),
+    .groups = "drop"
+  ) %>%
+  arrange(desc(mean_rel_growth))
+
+View(iris_overall)
+```
+
