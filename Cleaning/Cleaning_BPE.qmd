@@ -44,6 +44,12 @@ BPE_Paris_2024 <- vroom(
 ) |>
   filter(DEP == "75")
 
+saveRDS(
+  BPE_Paris_2024,
+  here("DATA_Raw", "BPE_Paris_2024.rds")
+)
+
+
 
 BPE_Paris_2024_sf <- BPE_Paris_2024 |>
   filter(!is.na(LAMBERT_X), !is.na(LAMBERT_Y)) |>
@@ -92,6 +98,12 @@ BPE_2016_clean <- BPE_2016 |>
   ) |>
   filter(!is.na(latitude), !is.na(longitude))
 
+BPE_2016_paris <- BPE_2016_clean |>
+  filter(dep == "75")  
+saveRDS(
+  BPE_2016_paris,
+  here("DATA_Raw", "BPE_Paris_2016.rds")
+)
 
 BPE_2016_sf <- BPE_2016_clean |>
   st_as_sf(
@@ -117,7 +129,7 @@ BPE_Paris_2016_iris <- st_join(
 
 saveRDS(
   BPE_Paris_2016_iris,
-  here("DATA_Raw", "BPE_Paris_2016_iris.rds")
+  here("DATA_Processed", "BPE_Paris_2016_iris.rds")
 )
 
 
