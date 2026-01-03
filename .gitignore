@@ -32,4 +32,5 @@ DATA_Raw/*
 !DATA_Raw/table_passage_1999_2022.csv
 !DATA_Raw/BPE_Paris_2016.rds
 !DATA_Raw/BPE_Paris_2024.rds
+!DATA_Raw/BPE_Paris_2018.rds
 
