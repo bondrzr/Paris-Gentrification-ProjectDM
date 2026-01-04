@@ -63,7 +63,7 @@ saveRDS(
 
 #Building a Price/Squaremeter indicator
 ```{r}
-dvf[, prix_m2 := valeur_fonciere / surface_reelle_bati]
+DVF_Paris_2020_25[, prix_m2 := valeur_fonciere / surface_reelle_bati]
 ```
 
 
@@ -71,7 +71,7 @@ dvf[, prix_m2 := valeur_fonciere / surface_reelle_bati]
 #transforming in lambert 93 (iris format)
 ```{r}
 dvf_sf <- st_as_sf(
-  dvf,
+  DVF_Paris_2020_25,
   coords = c("longitude", "latitude"),
   crs = 4326              
 ) |>
