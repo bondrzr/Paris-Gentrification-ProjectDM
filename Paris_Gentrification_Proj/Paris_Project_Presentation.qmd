@@ -1,0 +1,185 @@
+---
+title: "Project_Presentation"
+author: "Paul Joahny"
+format: html
+---
+
+#Link git hub project 
+https://github.com/bondrzr/Paris-Gentrification-ProjectDM.git
+
+##Link to sources 
+
+1) FILOSOFI
+https://www.insee.fr/fr/statistiques/3560118 (2015)
+https://www.insee.fr/fr/statistiques/4295611 (2016)
+https://www.insee.fr/fr/statistiques/5055909#consulter (2018)
+https://www.insee.fr/fr/statistiques/7233950 (2020)
+https://www.insee.fr/fr/statistiques/8229323#documentation (2021)
+
+2) IRIS historical change 
+https://www.data.gouv.fr/datasets/historique-des-codes-iris?resource_id=80cc1fa3-2339-4b04-9abc-d0ca84116921
+download  table synthétique 
+
+3) IRIS Shapefile 
+https://geoservices.ign.fr/telechargement-api/CONTOURS-IRIS?
+filter for "France entière" and "shapefile" there's only one left for 2020. 
+In the zip file -> Downloads\CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01\CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01\CONTOURS-IRIS\1_DONNEES_LIVRAISON_2020-12-00282\CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020" You need to keep the files in it's entirety for the "CONTOURS-IRIS.shp" to function.
+
+4) DVF
+https://www.data.gouv.fr/datasets/demandes-de-valeurs-foncieres-geolocalisees (2020-S2-2025-S1)
+https://data.cquest.org/dgfip_dvf/ click on dvf-2014-2018.csv.gz (2014-2018) 
+
+5) BPE
+https://data.iledefrance.fr/explore/dataset/bpe2016/table/?disjunctive.nom_com (2016)
+https://public.opendatasoft.com/explore/assets/bpe-2018/export/ (2018)
+https://data.iledefrance.fr/explore/dataset/bpe23-nettoye/information/ (2024)
+
+note for BPE: Currently our database for BPE is too large to commit to Github thus it is not available in our data_git folder
+
+
+###Sources description 
+FILOSOFI
+
+The filosofi database, offers specific estimates of household income, poverty, and inequality at area levels such as IRIS. It combines fiscal data and social benefit data to estimate income before and after redistribution, adjusted per household unit to account for household size and structure. Filosofi replaces older local income datasets and provides useful indicators like income deciles, medians, poverty rates and inequality measures like the Gini coefficient. 
+
+IRIS Historical Change
+
+The "Historique des codes IRIS" dataset shows a cross-reference of IRIS codes in France from 1999-2022, revealing how these neighbourhood-level statistical units have changed over time. It offers a "table de passage" that links old and new IRIS identifiers following boundary modifications, splits, or regroupings. This resource allows for researches to align socio-economic data over the years despite changes in IRIS definitions.
+
+IRIS Shapefile
+
+The IRIS shapefile provides the official polygon boundaries for all IRIS units in France. The 2020 "France entiere" shapefile offers total coverage of France and is the standard geographic reference for mapping IRIS-level data. It is broadly used to link datasets (like FILOSOFI and DVF) to their corresponding neighbourhoods.
+
+DVF
+
+The "Demandes de Valeurs Foncieres" (DVF) dataset, which is available through data.gouv.fr, contains property transaction records for France and includes geographic information when available. We have data sets from 2014-2018 and 2020-2025. DVF provides valuable information such as transaction dates, sale values, property types, surface areas. It can be used to analyse real estate information, such as change in price per square metre. In our project, DVF enables us to construct indicators of housing price changes at the IRIS level.
+
+BPE
+
+The "Base Permanente des Equipements" (BPE) dataset for Ile de France. It provides an inventory of public and private facilities, amenities and commercial establishments for the region of France.
+
+
+####Data Information Tables
+```{r}
+library(data.table)
+library(dplyr)
+
+file <- "data_git/prix_iris_2020-25.csv"
+
+cols  <- fread(file, nrows = 0)
+nrows <- fread(file, select = 1)[, .N]
+size_mb <- file.info(file)$size / (1024^2)
+
+summary_dvf <-
+  data.frame(
+    file         = basename(file),
+    rows         = nrows,
+    columns      = ncol(cols),
+    file_size_mb = round(size_mb, 2),
+    stringsAsFactors = FALSE
+  )
+
+summary_dvf |>
+  knitr::kable()
+
+colinfo_dvf <-
+  data.frame(
+    column = names(cols),
+    type   = sapply(cols, \(x) class(x)[1]),
+    stringsAsFactors = FALSE
+  ) |>
+  arrange(column)
+
+colinfo_dvf |>
+  knitr::kable()
+```
+```{r}
+library(data.table)
+library(dplyr)
+
+file <- "data_git/filo_final.csv"
+
+cols  <- fread(file, nrows = 0)
+nrows <- fread(file, select = 1)[, .N]
+size_mb <- file.info(file)$size / (1024^2)
+
+summary_dvf <-
+  data.frame(
+    file         = basename(file),
+    rows         = nrows,
+    columns      = ncol(cols),
+    file_size_mb = round(size_mb, 2),
+    stringsAsFactors = FALSE
+  )
+
+summary_dvf |>
+  knitr::kable()
+
+colinfo_dvf <-
+  data.frame(
+    column = names(cols),
+    type   = sapply(cols, \(x) class(x)[1]),
+    stringsAsFactors = FALSE
+  ) |>
+  arrange(column)
+
+colinfo_dvf |>
+  knitr::kable()
+```
+
+
+
+#####Important Variables Description
+IRIS -> CODE IRIS(Îlots regroupés pour l'information statistique) this is an INSEE indicator that regroups 10K inhabitants that facilitates statiscal analysis. We'll use it as proxy for parisian neighbourhoods.
+
+Prix_M2 -> this is the price per square meter we created this from our DVF file by dividind Price of "Valeur foncière" by the surface of the place. 
+
+N_ventes -> this is the number of sales that have occurred in the neighbourhood corresponding to the IRIS code
+
+Income per household unit variables 
+  Mediane -> Median income per household unit  
+  x1er_quartile -> First quartile value of income per household unit
+  x3er_quartile -> Third quartile value of income per household unit
+  x1er_decile, x2er_decile, ..., x9er_decile -> First to ninth decile value of income per household unit
+  
+Rapport_interdecile_d9_d1 -> Ratio of d9 to d1 income per household unit to represent difference in income levels
+
+S80_s20 -> The ratio between the total income of the richest 20 percent of the population and the poorest 20 percent
+  
+Indice_de_gini -> Measure of income inequality, the Gini index measures the average difference in income relative to the mean income
+  
+Taux_de_bas_revenus_declares_au_seuil_de_60_percent_percent -> This describes the percentage of individuals who have an income below or at the poverty line
+
+Part_des_menages_fiscaux_imposes_percent -> Share of taxable fiscal households
+  
+
+
+
+######Data Joining/Cleaning Description
+Every cleaning operation has it's own qmd file for readers to be able to use data as we have found.
+
+For FILOSOFI it was quite simple the objective was solely to keep the departments that interest us for our analysis and renaming columns for the names to be the same across years.
+For the joining part we used a passage table we chose to keep the 2020 IRIS CODE As our time frame. We used this table to transform IRIS number from previous years to the 2020 version or no change if there was no change done in the irises.
+After that we joined all the data into one big table for further analysis later on.
+
+For the DVF File we had 2 big databases each of them covering multiple years (2nd semester of 2020- 1st semester of 2025) and 2014-2018.
+
+The first one was the easiest as it had longitude and latitude, the first part was always to keep the IDF area in our analysis excluding the rest and keeping the columns that we might use in our analysis. Then we tried to get rid of "outliers" this could be when there is unavailable data or some that doesn't make any sense. The biggest part was going from long-lat to IRIS point for this we used a Iris shapefile of france in 2020 because it matched for most of our databases ( our data had to be modified into lambert 93 to match).
+
+We haven't been able to properly finish with older data-base as it doesnt have any long-Latt info so we'll have to do some parcel reattachment which might be a little harder. 
+
+For BPE it was quite similar to the DVF, even tough we had IRIS info they were from years different from 2020 but thankfully we had the geographical location in coordinates which allowed us to spatially reattach the businesses to the 2020iris points. We also filtered to fit our geographical are ( IFF-Paris) 
+
+#######Research Question
+Our research question is: How does gentrification in the Paris area affect the "Tissu comercial"?
+
+The idea is to see how gentrification can reshape neighbourhoods in terms of retail/service supply. As higher income populations move into formerly lower income or mixed income areas, we expect to observe a shift in the available businesses and more generally the commercial mix: growth of cafes, restaurants, shops, boutiques, coworking spaces etc with a subsequent decrease in traditional proximity retail. We will also attempt to observe whether new types of businesses emerge specifically tailored to a wealthier population.
+
+We will do this by firstly identifying areas (IRIS units) in which clear signs of gentrification have occurred. To do this we will create some indicators for price per sqm, median income levels, poverty rates, income disparity etc. Then using these to identify areas that for example have been previously below the average price per sqm and are now above that, we can note them as gentrified areas.
+
+Once we have identified which IRIS units have undergone gentrification, we will observe changes in the "tissu commerical" of these areas using the BPE (Base Permanente des Equipements). The BPE dataset is a record of the quantity and type of establishments. By analysing changes in the BPE for our identified gentrified areas we can see whether new business categories emerge as the distribution of income changes, which type of businesses increase in quantity, which types decline.
+
+This method of first identifying gentrified areas, then analysing the change in types and quantities of businesses, allows us to observe the effect of gentrification on the "tissu commerical" of Paris. 
+
+########Graphical Representation
+In the Paris_gentri_Maps folder you can see a representation of the distribution of price per sqm on a map of Paris.

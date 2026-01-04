@@ -8,8 +8,26 @@ library(dplyr)
 library(sf)
 library(ggplot2)
 library(viridis) 
+library(here)
 
 ```
+
+```{r}
+prix_iris_2020_25 <-readRDS(here("DATA_Processed" , "prix_iris_2020_25.rds"))
+
+iris2020 <- st_read(
+  here(
+    "DATA_Raw",
+    "CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020",
+    "CONTOURS-IRIS.shp"
+  ),
+  quiet = TRUE
+) |>
+  st_transform(2154) |>
+  filter(substr(CODE_IRIS, 1, 2) == "75") |>
+  select(CODE_IRIS, NOM_IRIS)
+```
+
 
 ```{r}
 prix_2020_25 <- prix_iris_2020_25 %>%
