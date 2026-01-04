@@ -1,0 +1,4 @@
+DATA_Raw/base-ic-activite-residents-2018.CSV filter=lfs diff=lfs merge=lfs -text
+DATA_Raw/base-ic-activite-residents-2019.CSV filter=lfs diff=lfs merge=lfs -text
+DATA_Raw/base-ic-activite-residents-2020.CSV filter=lfs diff=lfs merge=lfs -text
+DATA_Raw/base-ic-activite-residents-2021.CSV filter=lfs diff=lfs merge=lfs -text

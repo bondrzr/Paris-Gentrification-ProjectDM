@@ -22,8 +22,12 @@ data_git/
 
 *.csv
 *.txt
-
+DVFcleaning.qmd
+Test BPE.R
+table_passage_1999_2022.csv
+DVF_Test.R
 DATA_Raw/*
+
 !DATA_Raw/BASE_TD_FILO_DEC_IRIS_2015.xls
 !DATA_Raw/BASE_TD_FILO_DEC_IRIS_2016.xls
 !DATA_Raw/BASE_TD_FILO_DEC_IRIS_2018.xlsx
@@ -33,9 +37,9 @@ DATA_Raw/*
 !DATA_Raw/BPE_Paris_2016.rds
 !DATA_Raw/BPE_Paris_2024.rds
 !DATA_Raw/BPE_Paris_2018.rds
-!DATA_Raw/base-ic-activite-residents-2018.xlsx
-!DATA_Raw/base-ic-activite-residents-2019.xlsx
-!DATA_Raw/base-ic-activite-residents-2020.xlsx
-!DATA_Raw/base-ic-activite-residents-2021.xlsx
-!DATA_Raw/base-ic-activite-residents-2022.xlsx
+!DATA_Raw/base-ic-activite-residents-2018.CSV
+!DATA_Raw/base-ic-activite-residents-2019.CSV
+!DATA_Raw/base-ic-activite-residents-2020.CSV
+!DATA_Raw/base-ic-activite-residents-2021.CSV
+!DATA_Raw/base-ic-activite-residents-2022.CSV
 
