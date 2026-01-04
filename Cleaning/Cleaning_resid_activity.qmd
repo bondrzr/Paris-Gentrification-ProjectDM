@@ -1,0 +1,293 @@
+---
+title: "Cleaning_Resid_activity"
+author: "Pol"
+format: html
+---
+
+```{r}
+library(data.table)
+library(dplyr)
+library(janitor)
+library(here)
+library(purrr)
+
+table_passage <- fread(
+  here("DATA_Raw", "table_passage_1999_2022.csv")
+) %>%
+  clean_names()
+
+```
+```{r}
+
+Job_2018 <- fread(
+  here("DATA_Raw", "base-ic-activite-residents-2018.CSV")
+)
+
+
+JOB_2018_paris <- Job_2018 %>%
+  clean_names() %>%
+  mutate(
+    iris = as.character(iris),
+    dep  = substr(iris, 1, 2)
+  ) %>%
+  filter(
+    nchar(iris) == 9,
+    dep == "75"
+  )
+
+JOB_2018_keep <- c(
+  "iris", "com", "lab_iris", "typ_iris",
+  "p18_pop1564", "p18_act1564", "p18_actocc1564",
+  "c18_act1564_cs3", "c18_act1564_cs4",
+  "c18_act1564_cs5", "c18_act1564_cs6",
+  "p18_chom1564", "p18_sal15p",
+  "p18_actocc15p", "p18_etud1564"
+)
+
+JOB_2018_clean <- JOB_2018_paris %>%
+  select(all_of(JOB_2018_keep)) %>%
+  mutate(annee = 2018)
+
+
+JOB_2018_final <- JOB_2018_clean %>%
+  rename(iris_old = iris) %>%
+  left_join(
+    table_passage %>%
+      select(code_iris_2020, code_iris_2018),
+    by = c("iris_old" = "code_iris_2018")
+  ) %>%
+  mutate(
+    iris_2020 = if_else(is.na(code_iris_2020),
+                        iris_old,
+                        code_iris_2020)
+  ) %>%
+  select(-code_iris_2020)
+
+JOB_2018_final <- JOB_2018_final %>%
+  mutate(annee = 2018) %>%   
+  rename(
+    pop1564    = p18_pop1564,
+    act1564    = p18_act1564,
+    actocc1564 = p18_actocc1564,
+    chom1564   = p18_chom1564,
+    sal15p     = p18_sal15p,
+    actocc15p  = p18_actocc15p,
+    etud1564   = p18_etud1564,
+
+    cadres_1564      = c18_act1564_cs3,
+    prof_inter_1564  = c18_act1564_cs4,
+    employes_1564    = c18_act1564_cs5,
+    ouvriers_1564    = c18_act1564_cs6
+  ) %>%
+  select(
+    iris_2020, annee,
+    pop1564, act1564, actocc1564,
+    chom1564, sal15p, actocc15p,
+    etud1564,
+    cadres_1564, prof_inter_1564,
+    employes_1564, ouvriers_1564
+  )
+
+
+```
+
+#2019
+```{r}
+Job_2019 <- fread(
+  here("DATA_Raw", "base-ic-activite-residents-2019.CSV")
+)
+
+JOB_2019_paris <- Job_2019 %>%
+  clean_names() %>%
+  mutate(
+    iris = as.character(iris),
+    dep  = substr(iris, 1, 2)
+  ) %>%
+  filter(nchar(iris) == 9, dep == "75")
+
+JOB_2019_keep <- c(
+  "iris", "com", "lab_iris", "typ_iris",
+  "p19_pop1564", "p19_act1564", "p19_actocc1564",
+  "c19_act1564_cs3", "c19_act1564_cs4",
+  "c19_act1564_cs5", "c19_act1564_cs6",
+  "p19_chom1564", "p19_sal15p",
+  "p19_actocc15p", "p19_etud1564"
+)
+
+JOB_2019_final <- JOB_2019_paris %>%
+  select(all_of(JOB_2019_keep)) %>%
+  mutate(annee = 2019) %>%
+  rename(iris_old = iris) %>%
+  left_join(
+    table_passage %>% select(code_iris_2020, code_iris_2019),
+    by = c("iris_old" = "code_iris_2019")
+  ) %>%
+  mutate(
+    iris_2020 = if_else(is.na(code_iris_2020),
+                        iris_old,
+                        code_iris_2020)
+  ) %>%
+  select(-code_iris_2020)
+JOB_2019_final <- JOB_2019_final %>%
+  mutate(annee = 2019) %>%   
+  rename(
+    pop1564    = p19_pop1564,
+    act1564    = p19_act1564,
+    actocc1564 = p19_actocc1564,
+    chom1564   = p19_chom1564,
+    sal15p     = p19_sal15p,
+    actocc15p  = p19_actocc15p,
+    etud1564   = p19_etud1564,
+
+    cadres_1564      = c19_act1564_cs3,
+    prof_inter_1564  = c19_act1564_cs4,
+    employes_1564    = c19_act1564_cs5,
+    ouvriers_1564    = c19_act1564_cs6
+  )%>%
+  select(
+    iris_2020, annee,
+    pop1564, act1564, actocc1564,
+    chom1564, sal15p, actocc15p,
+    etud1564,
+    cadres_1564, prof_inter_1564,
+    employes_1564, ouvriers_1564
+  )
+```
+
+
+#2020
+```{r}
+Job_2020 <- fread(here("DATA_Raw", "base-ic-activite-residents-2020.CSV"))
+
+JOB_2020_final <- Job_2020 %>%
+  clean_names() %>%
+  mutate(
+    iris = as.character(iris),
+    dep  = substr(iris, 1, 2)
+  ) %>%
+  filter(nchar(iris) == 9, dep == "75") %>%
+  select(
+    iris, com, lab_iris, typ_iris,
+    p20_pop1564, p20_act1564, p20_actocc1564,
+    c20_act1564_cs3, c20_act1564_cs4,
+    c20_act1564_cs5, c20_act1564_cs6,
+    p20_chom1564, p20_sal15p,
+    p20_actocc15p, p20_etud1564
+  ) %>%
+  mutate(
+    annee = 2020,
+    iris_2020 = iris
+  )
+
+JOB_2020_final <- JOB_2020_final %>%
+  mutate(annee = 2020) %>%
+  rename(
+    pop1564    = p20_pop1564,
+    act1564    = p20_act1564,
+    actocc1564 = p20_actocc1564,
+    chom1564   = p20_chom1564,
+    sal15p     = p20_sal15p,
+    actocc15p  = p20_actocc15p,
+    etud1564   = p20_etud1564,
+
+    cadres_1564      = c20_act1564_cs3,
+    prof_inter_1564  = c20_act1564_cs4,
+    employes_1564    = c20_act1564_cs5,
+    ouvriers_1564    = c20_act1564_cs6
+  ) %>%
+  select(
+    iris_2020, annee,
+    pop1564, act1564, actocc1564,
+    chom1564, sal15p, actocc15p,
+    etud1564,
+    cadres_1564, prof_inter_1564,
+    employes_1564, ouvriers_1564
+  )
+```
+
+
+#2021
+```{r}
+Job_2021 <- fread(
+  here("DATA_Raw", "base-ic-activite-residents-2021.CSV")
+)
+
+JOB_2021_paris <- Job_2021 %>%
+  clean_names() %>%
+  mutate(
+    iris = as.character(iris),
+    dep  = substr(iris, 1, 2)
+  ) %>%
+  filter(nchar(iris) == 9, dep == "75")
+
+JOB_2021_keep <- c(
+  "iris", "com", "lab_iris", "typ_iris",
+  "p21_pop1564", "p21_act1564", "p21_actocc1564",
+  "c21_act1564_cs3", "c21_act1564_cs4",
+  "c21_act1564_cs5", "c21_act1564_cs6",
+  "p21_chom1564", "p21_sal15p",
+  "p21_actocc15p", "p21_etud1564"
+)
+
+JOB_2021_clean <- JOB_2021_paris %>%
+  select(all_of(JOB_2021_keep)) %>%
+  mutate(annee = 2021)
+
+JOB_2021_final <- JOB_2021_clean %>%
+  rename(iris_old = iris) %>%
+  left_join(
+    table_passage %>%
+      select(code_iris_2020, code_iris_2021),
+    by = c("iris_old" = "code_iris_2021")
+  ) %>%
+  mutate(
+    iris_2020 = if_else(
+      is.na(code_iris_2020),
+      iris_old,
+      code_iris_2020
+    )
+  ) %>%
+  select(-code_iris_2020)
+
+JOB_2021_final <- JOB_2021_final %>%
+  mutate(annee = 2021) %>%
+  rename(
+    pop1564    = p21_pop1564,
+    act1564    = p21_act1564,
+    actocc1564 = p21_actocc1564,
+    chom1564   = p21_chom1564,
+    sal15p     = p21_sal15p,
+    actocc15p  = p21_actocc15p,
+    etud1564   = p21_etud1564,
+
+    cadres_1564      = c21_act1564_cs3,
+    prof_inter_1564  = c21_act1564_cs4,
+    employes_1564    = c21_act1564_cs5,
+    ouvriers_1564    = c21_act1564_cs6
+  ) %>%
+  select(
+    iris_2020, annee,
+    pop1564, act1564, actocc1564,
+    chom1564, sal15p, actocc15p,
+    etud1564,
+    cadres_1564, prof_inter_1564,
+    employes_1564, ouvriers_1564
+  )
+```
+
+
+
+```{r}
+JOB_all <- bind_rows(
+  JOB_2018_final,
+  JOB_2019_final,
+  JOB_2020_final,
+  JOB_2021_final,
+)
+
+saveRDS(
+  JOB_all,
+  here("DATA_Processed", "JOB_all.rds")
+)
+```
+
