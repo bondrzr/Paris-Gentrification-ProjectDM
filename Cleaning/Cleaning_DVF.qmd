@@ -14,7 +14,7 @@ library(here)
 
 #Keeping the departements we want to look at, same for the columns 
 ```{r}
-idf <- c("75","92","93","94","91","77","78","95")
+Paris <- c("75")
 
 
 cols_keep <- c(
@@ -41,17 +41,22 @@ cols_keep <- c(
 
 #Getting rid of problematic data 
 ```{r}
-dvf <- fread(
+DVF_Paris_2020_25 <- fread(
   here("DATA_Raw", "dvf.csv"),
   select = cols_keep
 )[
-  code_departement %in% idf &
+  code_departement %in% Paris &
     type_local %in% c("Appartement", "Maison") &
     !is.na(surface_reelle_bati) &
     surface_reelle_bati > 9 & surface_reelle_bati < 500 &
     valeur_fonciere > 5000 & valeur_fonciere < 5e6 &
     !is.na(longitude) & !is.na(latitude)
 ]
+
+saveRDS(
+  DVF_Paris_2020_25,
+  here("DATA_Raw", "DVF_Paris_2020_25.rds")
+)
 
 ```
 
@@ -146,17 +151,16 @@ sort(unique(prix_iris_2020_25$annee))
 #DVF 2014-2018
 
 ```{r}
-dvf2014_18 <- fread(
-  "DATA/dvf_14_18.csv",
-  select = cols_keep           
-)[
-  code_departement %in% idf &                          
-    type_local %in% c("Appartement", "Maison") &          
-    !is.na(surface_reelle_bati) &                         
-    surface_reelle_bati > 9 & surface_reelle_bati < 500 & 
-    valeur_fonciere > 5000 & valeur_fonciere < 5e6 &      
-    !is.na(longitude) & !is.na(latitude)                  
-]
+dvf2014_18 <- fread(here("DATA_Raw" , "dvf_14_18.csv"))
 
-names("DATA/dvf_14_18.csv")
 ```
+```{r}
+IDF_dep <- c("75")
+
+dvf2014_18_IDF <- dvf2014_18 %>%
+  filter(code_departement %in% IDF_dep) %>%
+  filter(type_local %in% c("Appartement", "Maison"))
+
+
+```
+
