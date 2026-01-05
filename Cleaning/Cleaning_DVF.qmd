@@ -72,6 +72,14 @@ saveRDS(
 ```{r}
 DVF_Paris_2020_25 <- readRDS(here("DATA_Raw", "DVF_Paris_2020_25.rds"))
 DVF_Paris_2020_25[, prix_m2 := valeur_fonciere / surface_reelle_bati]
+
+
+q <- quantile(DVF_Paris_2020_25$prix_m2, probs = c(0.015, 0.95), na.rm = TRUE)
+
+DVF_Paris_2020_25 <- DVF_Paris_2020_25[
+  prix_m2 >= q[1] & prix_m2 <= q[2]
+]
+
 ```
 
 
@@ -136,7 +144,7 @@ prix_iris_2020_25 <- dvf_iris |>
     n_ventes     = n(),
     .groups = "drop"
   ) |>
-  filter(n_ventes >= 1)
+  filter(n_ventes >= 5)
 
 
 
@@ -257,6 +265,12 @@ saveRDS(
 ```{r}
 DVF_Paris_2014_18 <-readRDS(here("DATA_Raw", "DVF_Paris_2014_18.rds"))
 DVF_Paris_2014_18[, prix_m2 := valeur_fonciere / surface_relle_bati]
+
+q <- quantile(DVF_Paris_2014_18$prix_m2, probs = c(0.015, 0.95), na.rm = TRUE)
+
+DVF_Paris_2014_18 <- DVF_Paris_2014_18[
+  prix_m2 >= q[1] & prix_m2 <= q[2]
+]
 ```
 
 
@@ -310,7 +324,7 @@ prix_iris_2014_18 <- dvf_iris_2014_18 |>
     n_ventes    = n(),
     .groups = "drop"
   ) |>
-  filter(n_ventes >= 1)
+  filter(n_ventes >= 5)
 
 ```
 
