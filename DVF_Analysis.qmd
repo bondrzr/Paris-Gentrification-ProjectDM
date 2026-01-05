@@ -9,7 +9,7 @@ library(data.table)
 library(dplyr)
 library(here)
 
-file <- here("DATA_Processed", "prix_iris_2020_25.rds")
+file <- here("DATA_Processed", "prix_iris_2014_25.rds")
 
 df <- readRDS(file)
 
@@ -33,8 +33,10 @@ iris_overall <- rel %>%
   summarise(
     mean_rel_growth = mean(rel_growth, na.rm = TRUE),
     n_years = n(),
+    index_score = (1 + mean_rel_growth),
     .groups = "drop"
   ) %>%
+  filter(n_years >= 2) %>%
   arrange(desc(mean_rel_growth))
 
 View(iris_overall)
