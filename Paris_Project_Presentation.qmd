@@ -40,7 +40,14 @@ In the zip file -> Downloads\CONTOURS-IRIS_2-1__SHP__FRA_2020-01-01\CONTOURS-IRI
 <https://public.opendatasoft.com/explore/assets/bpe-2018/export/> (2018)
 <https://data.iledefrance.fr/explore/dataset/bpe23-nettoye/information/> (2024)
 
-note for BPE: Currently our database for BPE is too large to commit to Github thus it is not available in our data_git folder
+note for BPE: Currently our database for BPE is too large to commit to Github thus it is not available in our data_git folder but a Paris reduced version is.
+
+6) Activity of residents 
+<https://www.insee.fr/fr/statistiques/5650708> (2018)
+<https://www.insee.fr/fr/statistiques/6543289> (2019)
+<https://www.insee.fr/fr/statistiques/7704089> (2020)
+<https://www.insee.fr/fr/statistiques/6543289> (2021)
+
 
 
 ###Sources description 
@@ -65,6 +72,9 @@ BPE
 
 The "Base Permanente des Equipements" (BPE) dataset for Ile de France. It provides an inventory of public and private facilities, amenities and commercial establishments for the region of France.
 
+Activity of residents 
+
+This base « Activité des résidents » gives data on different characteristics of the workers of a given neighborhood. This could be age , sex , CSP category.
 
 ####Data Information Tables
 ```{r}
@@ -161,13 +171,13 @@ Part_des_menages_fiscaux_imposes_percent -> Share of taxable fiscal households
 
 Every cleaning operation has it's own qmd file for readers to be able to use data as we have found.
 
-For FILOSOFI it was quite simple the objective was solely to keep the departments that interest us for our analysis and renaming columns for the names to be the same across years.
+For FILOSOFI it was quite simple the objective was solely to keep the department that interest us for our analysis and renaming columns for the names to be the same across years.
 For the joining part we used a passage table we chose to keep the 2020 IRIS CODE As our time frame. We used this table to transform IRIS number from previous years to the 2020 version or no change if there was no change done in the irises.
 After that we joined all the data into one big table for further analysis later on.
 
 For the DVF File we had 2 big databases each of them covering multiple years (2nd semester of 2020- 1st semester of 2025) and 2014-2018.
 
-The first one was the easiest as it had longitude and latitude, the first part was always to keep the IDF area in our analysis excluding the rest and keeping the columns that we might use in our analysis. Then we tried to get rid of "outliers" this could be when there is unavailable data or some that doesn't make any sense. The biggest part was going from long-lat to IRIS point for this we used a Iris shapefile of france in 2020 because it matched for most of our databases ( our data had to be modified into lambert 93 to match).
+The first one was the easiest as it had longitude and latitude, the first part was always to keep the Paris area in our analysis excluding the rest and keeping the columns that we might use in our analysis. Then we tried to get rid of "outliers" this could be when there is unavailable data or some that doesn't make any sense. The biggest part was going from long-lat to IRIS point for this we used a Iris shapefile of france in 2020 because it matched for most of our databases ( our data had to be modified into lambert 93 to match).
 
 We haven't been able to properly finish with older data-base as it doesnt have any long-Latt info so we'll have to do some parcel reattachment which might be a little harder. 
 

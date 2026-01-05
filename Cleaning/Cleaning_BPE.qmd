@@ -10,11 +10,11 @@ library(dplyr)
 library(vroom)
 library(here)
 library(tidyr)
+library(data.table)
 ```
 
-# BPE for 2024
+#Loading the IRIS 2020 File 
 ```{r}
-
 iris2020 <- st_read(
   here(
     "DATA_Raw",
@@ -27,7 +27,19 @@ iris2020 <- st_read(
   filter(substr(CODE_IRIS, 1, 2) == "75") |>
   select(CODE_IRIS, NOM_IRIS)
 
+```
 
+
+
+# BPE for 2024
+
+# !! IMMPORTANT !! 
+If you want to replicate our data you can either download the BPE 2024 file from : 
+<https://data.iledefrance.fr/explore/dataset/bpe23-nettoye/information/>
+This file is too big (1,4GO) to be committed onto GITHUB but we've added a reduced version on DATA_Raw "BPE_Paris_2024_iris.rds". This is the same file but already reduced to Paris and keeping the necessary columns. If you're using this one then you can skip the next two codes and go directly to linking IRIS2020 (don't forget to run the previous codes before this message).
+
+#Choosing the appropriate columns
+```{r}
 bpe_keep <- c(
   "AN", "DEPCOM", "DEP", "REG", "LIBCOM",
   "DCIRIS", "LONGITUDE", "LATITUDE",
@@ -35,7 +47,10 @@ bpe_keep <- c(
   "DOM", "SDOM", "TYPEQU", "TYPE", "CATEGORIE"
 )
 
+```
 
+#loading up the data
+```{r}
 BPE_Paris_2024 <- vroom(
   here("DATA_Raw", "BPE24.csv"),
   delim = ";",
@@ -48,8 +63,13 @@ saveRDS(
   BPE_Paris_2024,
   here("DATA_Raw", "BPE_Paris_2024.rds")
 )
+```
 
+#Linking with IRIS 2020
 
+```{r}
+
+BPE_Paris_2024 <-readRDS(here("DATA_Raw" , "BPE_Paris_2024.rds"))
 
 BPE_Paris_2024_sf <- BPE_Paris_2024 |>
   filter(!is.na(LAMBERT_X), !is.na(LAMBERT_Y)) |>
@@ -74,8 +94,8 @@ saveRDS(
   BPE_Paris_2024_iris,
   here("DATA_Processed", "BPE_Paris_2024_iris.rds")
 )
-
 ```
+
 
 
 
@@ -100,11 +120,17 @@ BPE_2016_clean <- BPE_2016 |>
 
 BPE_2016_paris <- BPE_2016_clean |>
   filter(dep == "75")  
+
 saveRDS(
   BPE_2016_paris,
   here("DATA_Raw", "BPE_Paris_2016.rds")
 )
 
+```
+
+
+
+```{r}
 BPE_2016_sf <- BPE_2016_clean |>
   st_as_sf(
     coords = c("longitude", "latitude"),
@@ -131,7 +157,6 @@ saveRDS(
   BPE_Paris_2016_iris,
   here("DATA_Processed", "BPE_Paris_2016_iris.rds")
 )
-
 
 ```
 
@@ -180,8 +205,8 @@ BPE_Paris_2018_2020 <- BPE_Paris_2018 %>%
   mutate(
     iris_2020 = if_else(
       is.na(code_iris_2020),
-      iris_old,          # IRIS inchangé
-      code_iris_2020     # IRIS modifié
+      iris_old,          
+      code_iris_2020     
     )
   ) %>%
   select(-code_iris_2020)

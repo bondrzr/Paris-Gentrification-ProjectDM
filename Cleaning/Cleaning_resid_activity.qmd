@@ -11,12 +11,18 @@ library(janitor)
 library(here)
 library(purrr)
 
+```
+
+#Loading Passage Table
+```{r}
 table_passage <- fread(
   here("DATA_Raw", "table_passage_1999_2022.csv")
 ) %>%
   clean_names()
-
 ```
+
+
+#2018
 ```{r}
 
 Job_2018 <- fread(
@@ -276,7 +282,7 @@ JOB_2021_final <- JOB_2021_final %>%
 ```
 
 
-
+#Merging into one data base 
 ```{r}
 JOB_all <- bind_rows(
   JOB_2018_final,
