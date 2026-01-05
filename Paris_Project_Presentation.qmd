@@ -138,7 +138,129 @@ colinfo_dvf |>
   knitr::kable()
 ```
 
+```{r}
+library(data.table)
+library(dplyr)
+library(here)
 
+file <- here("DATA_Processed", "JOB_all.rds")
+
+df <- readRDS(file)
+
+summary_dvf <- data.frame(
+  file         = basename(file),
+  rows         = nrow(df),
+  columns      = ncol(df),
+  file_size_mb = round(file.info(file)$size / (1024^2), 2),
+  stringsAsFactors = FALSE
+)
+
+summary_dvf |>
+  knitr::kable()
+
+colinfo_dvf <- data.frame(
+  column = names(df),
+  type   = sapply(df, \(x) class(x)[1]),
+  stringsAsFactors = FALSE
+) |>
+  arrange(column)
+
+colinfo_dvf |>
+  knitr::kable()
+```
+
+```{r}
+library(data.table)
+library(dplyr)
+library(here)
+
+file <- here("DATA_Processed", "BPE_Paris_2024_iris.rds")
+
+df <- readRDS(file)
+
+summary_dvf <- data.frame(
+  file         = basename(file),
+  rows         = nrow(df),
+  columns      = ncol(df),
+  file_size_mb = round(file.info(file)$size / (1024^2), 2),
+  stringsAsFactors = FALSE
+)
+
+summary_dvf |>
+  knitr::kable()
+
+colinfo_dvf <- data.frame(
+  column = names(df),
+  type   = sapply(df, \(x) class(x)[1]),
+  stringsAsFactors = FALSE
+) |>
+  arrange(column)
+
+colinfo_dvf |>
+  knitr::kable()
+```
+
+```{r}
+library(data.table)
+library(dplyr)
+library(here)
+
+file <- here("DATA_Processed", "BPE_Paris_2018_iris.rds")
+
+df <- readRDS(file)
+
+summary_dvf <- data.frame(
+  file         = basename(file),
+  rows         = nrow(df),
+  columns      = ncol(df),
+  file_size_mb = round(file.info(file)$size / (1024^2), 2),
+  stringsAsFactors = FALSE
+)
+
+summary_dvf |>
+  knitr::kable()
+
+colinfo_dvf <- data.frame(
+  column = names(df),
+  type   = sapply(df, \(x) class(x)[1]),
+  stringsAsFactors = FALSE
+) |>
+  arrange(column)
+
+colinfo_dvf |>
+  knitr::kable()
+```
+
+```{r}
+library(data.table)
+library(dplyr)
+library(here)
+
+file <- here("DATA_Processed", "BPE_Paris_2016_iris.rds")
+
+df <- readRDS(file)
+
+summary_dvf <- data.frame(
+  file         = basename(file),
+  rows         = nrow(df),
+  columns      = ncol(df),
+  file_size_mb = round(file.info(file)$size / (1024^2), 2),
+  stringsAsFactors = FALSE
+)
+
+summary_dvf |>
+  knitr::kable()
+
+colinfo_dvf <- data.frame(
+  column = names(df),
+  type   = sapply(df, \(x) class(x)[1]),
+  stringsAsFactors = FALSE
+) |>
+  arrange(column)
+
+colinfo_dvf |>
+  knitr::kable()
+```
 
 #####Important Variables Description
 
