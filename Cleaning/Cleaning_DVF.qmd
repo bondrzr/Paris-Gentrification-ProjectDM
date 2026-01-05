@@ -70,6 +70,7 @@ saveRDS(
 
 #Building a Price/Squaremeter indicator
 ```{r}
+DVF_Paris_2020_25 <- readRDS(here("DATA_Raw", "DVF_Paris_2020_25.rds"))
 DVF_Paris_2020_25[, prix_m2 := valeur_fonciere / surface_reelle_bati]
 ```
 
@@ -137,11 +138,7 @@ prix_iris_2020_25 <- dvf_iris |>
   ) |>
   filter(n_ventes >= 1)
 
-dir.create(
-  here("DATA_Processed"),
-  showWarnings = FALSE,
-  recursive = TRUE
-)
+
 
 saveRDS(
   prix_iris_2020_25,
@@ -157,17 +154,171 @@ sort(unique(prix_iris_2020_25$annee))
 
 #DVF 2014-2018
 
+
+
+
 ```{r}
-dvf2014_18 <- fread(here("DATA_Raw" , "dvf_14_18.csv"))
+library(dplyr)
+library(stringr)
+library(sf)
+library(banR)
+library(here)
 
 ```
+#Loading IRIS
 ```{r}
-IDF_dep <- c("75")
+iris2020 <- st_read(
+  here("DATA_Raw", "CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020", "CONTOURS-IRIS.shp"),
+  quiet = TRUE
+) |>
+  st_transform(2154)
+```
 
-dvf2014_18_IDF <- dvf2014_18 %>%
-  filter(code_departement %in% IDF_dep) %>%
-  filter(type_local %in% c("Appartement", "Maison"))
+# !! IMMPORTANT !! 
+Similar message than before if you want to replicate our data you can either download the DVF file from : 
+<https://data.cquest.org/dgfip_dvf/> click on dvf-2014-2018.csv.gz 
+This file is also quite big (2go) so we weren't able to upload it on Git, so you can also use the reduced version you can find in DATA_RAW "DVF_Paris_2014_18.rds" this is the same one but reduced to the Paris region and with the good columns + our built in adresses. If you're starting from the second option you can skip the next three parts and continue from "Building a Price/square meter indicator".
 
 
+#Keeping the departement we want to look at, same for the columns (some differ from 2020)
+```{r}
+
+Paris <- c("75")
+cols_keep2 <- c(
+  "date_mutation",
+  "nature_mutation",
+  "valeur_fonciere",
+  "type_local",
+  "code_type_local",
+  "surface_relle_bati",
+  "nombre_pieces_principales",
+  "surface_terrain",
+  "code_postal",
+  "code_commune",
+  "commune",
+  "code_departement",
+  "numero_voie",
+  "suffixe_numero",
+  "type_voie",
+  "voie"
+)
+
+
+```
+
+#Loading 2014-18 data while getting rid of outliers 
+```{r}
+
+DVF_Paris_2014_18 <- fread(
+  here("DATA_Raw", "dvf_14_18.csv"),
+  select = cols_keep2
+)[
+  code_departement %in% Paris &
+    type_local %in% c("Appartement", "Maison") &
+    !is.na(surface_relle_bati) &
+    surface_relle_bati > 9 & surface_relle_bati < 500 &
+    valeur_fonciere > 5000 & valeur_fonciere < 5e6 
+]
+
+
+```
+
+#Creating adresses for reverse geocoding 
+```{r}
+DVF_Paris_2014_18 <- DVF_Paris_2014_18 |>
+  mutate(
+    code_postal = if_else(
+      is.na(code_postal),
+      paste0(
+        "750",
+        str_pad(as.character(as.numeric(code_commune) %% 100), 2, pad = "0")
+      ),
+      as.character(code_postal)
+    )
+  ) |>
+  filter(!is.na(code_postal)) |>
+  mutate(
+    adresse = str_squish(paste(
+      numero_voie,
+      suffixe_numero,
+      type_voie,
+      voie,
+      code_postal,
+      "Paris"
+    ))
+  )
+saveRDS(
+  DVF_Paris_2014_18,
+  here("DATA_Raw", "DVF_Paris_2014_18.rds")
+)
+```
+
+#Building a Price/Squaremeter indicator
+```{r}
+DVF_Paris_2014_18 <-readRDS(here("DATA_Raw", "DVF_Paris_2014_18.rds"))
+DVF_Paris_2014_18[, prix_m2 := valeur_fonciere / surface_relle_bati]
+```
+
+
+#Seperating unique adresses
+```{r}
+adresses_uniques <-  DVF_Paris_2014_18 |>
+  distinct(adresse)
+```
+
+#Finding position and keeping the reliable ones 
+```{r}
+geo <- geocode_tbl(adresses_uniques, adresse)
+geo <- geo |> filter(result_score >= 0.6)
+
+```
+
+#adding those positions to our previous base
+```{r}
+dvf_geo <-  DVF_Paris_2014_18 |>
+  left_join(geo, by = "adresse") |>
+  filter(!is.na(longitude) & !is.na(latitude))
+```
+
+#transform to correct format
+```{r}
+dvf_sf <- st_as_sf(dvf_geo, coords = c("longitude", "latitude"), crs = 4326) |>
+  st_transform(2154)
+```
+
+#Link IRISES 
+```{r}
+dvf_iris_2014_18 <- st_join(
+  dvf_sf,
+  iris2020[, c("CODE_IRIS", "NOM_IRIS")],
+  left = TRUE
+) |>
+  filter(!is.na(CODE_IRIS))
+
+dvf_iris_2014_18 <- dvf_iris_2014_18 |>
+  mutate(annee = as.integer(format(as.Date(date_mutation), "%Y")))
+```
+
+
+```{r}
+prix_iris_2014_18 <- dvf_iris_2014_18 |>
+  st_drop_geometry() |>
+  group_by(CODE_IRIS, annee) |>
+  summarise(
+    prix_m2_med = median(prix_m2, na.rm = TRUE),
+    n_ventes    = n(),
+    .groups = "drop"
+  ) |>
+  filter(n_ventes >= 1)
+
+```
+
+
+#Save final 
+```{r}
+saveRDS(
+  prix_iris_2014_18,
+  here("DATA_Processed", "prix_iris_2014_18.rds")
+)
 ```
 
