@@ -266,7 +266,7 @@ colinfo_dvf |>
 
 IRIS -> CODE IRIS(Îlots regroupés pour l'information statistique) this is an INSEE indicator that regroups 10K inhabitants that facilitates statiscal analysis. We'll use it as proxy for parisian neighbourhoods.
 
-Prix_M2 -> this is the price per square meter we created this from our DVF file by dividind Price of "Valeur foncière" by the surface of the place. 
+Prix_M2 -> this is the price per square meter we created this from our DVF file by dividing Price of "Valeur foncière" by the surface of the place. 
 
 N_ventes -> this is the number of sales that have occurred in the neighbourhood corresponding to the IRIS code
 
@@ -285,8 +285,24 @@ Indice_de_gini -> Measure of income inequality, the Gini index measures the aver
 Taux_de_bas_revenus_declares_au_seuil_de_60_percent_percent -> This describes the percentage of individuals who have an income below or at the poverty line
 
 Part_des_menages_fiscaux_imposes_percent -> Share of taxable fiscal households
-  
 
+pop1564 -> Number of people aged 15 to 64
+
+act1564 -> Number of people either working or unemployed wanting to work aged 15 to 64
+
+actocc1564 -> Number of people active and employed aged 15-64
+
+chom1564 -> Number of unemployed people aged 15-64
+
+sal15p -> Number of people who work for a salary aged 15 and older
+
+actocc15p -> Number of people active and employed aged 15 and older
+
+etud1564 -> Number of students aged 15 to 64
+
+cadres_1564 -> Number of managers aged 15 to 64
+
+prof_inter_1564 -> Number of intellectual workers aged 15-64
 
 
 ######Data Joining/Cleaning Description
