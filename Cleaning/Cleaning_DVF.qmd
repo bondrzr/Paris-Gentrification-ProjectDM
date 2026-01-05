@@ -306,6 +306,7 @@ prix_iris_2014_18 <- dvf_iris_2014_18 |>
   group_by(CODE_IRIS, annee) |>
   summarise(
     prix_m2_med = median(prix_m2, na.rm = TRUE),
+    prix_m2_mean = mean(prix_m2, na.rm = TRUE),
     n_ventes    = n(),
     .groups = "drop"
   ) |>
@@ -320,5 +321,38 @@ saveRDS(
   prix_iris_2014_18,
   here("DATA_Processed", "prix_iris_2014_18.rds")
 )
+```
+
+
+
+
+#FInal step of cleaning mergin both bases into a final one 
+
+```{r}
+
+prix_2014_18 <- readRDS(here("DATA_Processed", "prix_iris_2014_18.rds"))
+prix_2020_25 <- readRDS(here("DATA_Processed", "prix_iris_2020_25.rds"))
+
+colnames(prix_2014_18)
+colnames(prix_2020_25)
+
+
+
+```
+
+```{r}
+prix_iris_2014_25 <- bind_rows(prix_2014_18, prix_2020_25) %>%
+  arrange(CODE_IRIS, annee)
+
+
+nrow(prix_iris_2014_25)
+length(unique(prix_iris_2014_25$CODE_IRIS))
+sort(unique(prix_iris_2014_25$annee))
+
+```
+
+```{r}
+# Sauvegarde
+saveRDS(prix_iris_2014_25, here("DATA_Processed", "prix_iris_2014_25.rds"))
 ```
 
