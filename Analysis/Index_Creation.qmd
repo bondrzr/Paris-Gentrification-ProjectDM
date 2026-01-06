@@ -1,5 +1,5 @@
 ---
-title: "DVF_Analysis"
+title: "Index_Creation"
 format: html
 author: "Matei Vasile"
 ---
@@ -46,6 +46,9 @@ iris_overall <- rel %>%
   ) %>%
   filter(n_years >= 5) %>%
   arrange(desc(mean_rel_growth))
+```
+```{r}
+saveRDS(iris_overall, here("DATA_Processed", "iris_overall.rds"))
 ```
 
 
@@ -112,6 +115,10 @@ dynamics_IRIS <- dynamics_IRIS |>
 
 head(dynamics_IRIS)
 ```
+```{r}
+saveRDS(dynamics_IRIS, here("DATA_Processed", "dynamics_IRIS.rds"))
+```
+
 
 #Revenue Index
 
@@ -218,3 +225,7 @@ index_rev <- income_overall %>%
   ) %>%
   arrange(desc(index_rev))
 ```
+```{r}
+saveRDS(index_rev, here("DATA_Processed", "index_rev.rds"))
+```
+
