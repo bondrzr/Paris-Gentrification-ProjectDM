@@ -107,9 +107,9 @@ dynamics_IRIS <- dynamics_IRIS |>
 
 dynamics_IRIS <- dynamics_IRIS |>
   mutate(
-    score_gentri = Z_CSP_plus - Z_CSP_pop - Z_chom
+    index_pop = Z_CSP_plus - Z_CSP_pop - Z_chom
   ) |>
-  arrange(desc(score_gentri)) 
+  arrange(desc(index_pop)) 
 
 head(dynamics_IRIS)
 ```
