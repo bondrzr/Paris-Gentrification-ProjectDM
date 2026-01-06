@@ -30,7 +30,7 @@ D_rev2015_clean <- D_rev2015_clean %>%
   mutate(iris = as.character(iris)) %>%
   filter(nchar(iris) == 9)
 
-IDF_dep <- c("75","77","78","91","92","93","94","95")
+IDF_dep <- c("75")
 
 D_rev2015_IDF <- D_rev2015_clean %>%
   mutate(dep = substr(iris, 1, 2)) %>%
@@ -59,7 +59,7 @@ D_rev2016_clean <- D_rev2016_clean %>%
   mutate(iris = as.character(iris)) %>%
   filter(nchar(iris) == 9)
 
-IDF_dep <- c("75","77","78","91","92","93","94","95")
+IDF_dep <- c("75")
 
 D_rev2016_IDF <- D_rev2016_clean %>%
   mutate(dep = substr(iris, 1, 2)) %>%
@@ -87,7 +87,7 @@ D_rev2018 <- D_rev2018 %>%
   mutate(iris = as.character(iris)) %>%
   filter(nchar(iris) == 9)
 
-IDF_dep <- c("75","77","78","91","92","93","94","95")
+IDF_dep <- c("75")
 
 D_rev2018_IDF <- D_rev2018 %>%
   mutate(dep = substr(iris, 1, 2)) %>%
@@ -117,7 +117,7 @@ D_rev2020 <- D_rev2020 %>%
   mutate(iris = as.character(iris)) %>%
   filter(nchar(iris) == 9)
 
-IDF_dep <- c("75","77","78","91","92","93","94","95")
+IDF_dep <- c("75")
 
 D_rev2020_IDF <- D_rev2020 %>%
   mutate(dep = substr(iris, 1, 2)) %>%
@@ -144,7 +144,7 @@ D_rev2021 <- D_rev2021 %>%
   mutate(iris = as.character(iris)) %>%
   filter(nchar(iris) == 9)
 
-IDF_dep <- c("75","77","78","91","92","93","94","95")
+IDF_dep <- c("75")
 
 D_rev2021_IDF <- D_rev2021 %>%
   mutate(dep = substr(iris, 1, 2)) %>%

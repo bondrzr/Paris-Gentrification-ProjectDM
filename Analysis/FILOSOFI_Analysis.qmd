@@ -23,7 +23,6 @@ df_new <- df_index %>%
 
 ```
 ```{r}
-# STEP 1: Collapse to one median income per IRIS–year
 df_income <- df_new %>%
   group_by(iris, annee) %>%
   summarise(
@@ -31,7 +30,6 @@ df_income <- df_new %>%
     .groups = "drop"
   )
 
-# STEP 2: Compute annualised year-on-year income growth per IRIS
 income_yoy <- df_income %>%
   arrange(iris, annee) %>%
   group_by(iris) %>%
@@ -42,7 +40,6 @@ income_yoy <- df_income %>%
   ungroup() %>%
   filter(!is.na(income_growth))
 
-# STEP 3: Compute yearly “market” benchmark income growth
 income_bench <- income_yoy %>%
   group_by(annee) %>%
   summarise(
@@ -50,7 +47,6 @@ income_bench <- income_yoy %>%
     .groups = "drop"
   )
 
-# STEP 4: Compute relative income growth and cumulate into a base-1 index
 income_overall <- income_yoy %>%
   left_join(income_bench, by = "annee") %>%
   mutate(
