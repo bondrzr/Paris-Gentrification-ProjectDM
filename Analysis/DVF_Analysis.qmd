@@ -41,13 +41,11 @@ iris_overall <- rel %>%
   summarise(
     mean_rel_growth = mean(rel_growth, na.rm = TRUE),
     n_years = n(),
-    index_score = (1 + mean_rel_growth),
+    index_price = (1 + mean_rel_growth),
     .groups = "drop"
   ) %>%
   filter(n_years >= 5) %>%
   arrange(desc(mean_rel_growth))
-
-View(iris_overall)
 ```
 
 
@@ -66,7 +64,7 @@ JOB_all_clean <- JOB_all |>
   )
 ```
 
-#New base calculating slopes 
+#New base calculating slopes
 ```{r}
 JOB_gentrification <- JOB_all_clean |>
   select(
@@ -115,3 +113,108 @@ dynamics_IRIS <- dynamics_IRIS |>
 head(dynamics_IRIS)
 ```
 
+#Revenue Index
+
+```{r}
+df_raw <- readRDS(
+  here("DATA_Processed", "filo_final.rds")
+)
+```
+
+```{r}
+df_index <- df_raw %>%
+  transmute(iris_lib, commune, commune_lib, poverty_share = taux_de_bas_revenus_declares_au_seuil_de_60_percent_percent, mediane, indice_de_gini, x1er_decile, annee, iris = iris_2020, dep)
+
+df_new <- df_index %>%
+  mutate(mediane = as.numeric(mediane), poverty_share = as.numeric(poverty_share))
+```
+
+```{r}
+df_income <- df_new %>%
+  group_by(iris, annee) %>%
+  summarise(
+    mediane = median(mediane, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+income_yoy <- df_income %>%
+  arrange(iris, annee) %>%
+  group_by(iris) %>%
+  mutate(
+    year_gap = annee - lag(annee),
+    income_growth = (mediane / lag(mediane))^(1 / year_gap) - 1
+  ) %>%
+  ungroup() %>%
+  filter(!is.na(income_growth))
+
+income_bench <- income_yoy %>%
+  group_by(annee) %>%
+  summarise(
+    avg_income_growth = mean(income_growth, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+income_overall <- income_yoy %>%
+  left_join(income_bench, by = "annee") %>%
+  mutate(
+    rel_income_growth = income_growth - avg_income_growth
+  ) %>%
+  arrange(iris, annee) %>%
+  group_by(iris) %>%
+  summarise(
+    income_index_score_1 = last(cumprod(1 + rel_income_growth)),
+    mean_rel_income_growth = mean(rel_income_growth, na.rm = TRUE),
+    n_years = n_distinct(annee),
+    .groups = "drop"
+  ) %>%
+  filter(n_years >= 2) %>%
+  arrange(desc(income_index_score_1))
+```
+
+```{r}
+df_poverty <- df_new %>%
+  mutate(poverty_share = readr::parse_number(as.character(poverty_share))) %>%
+  group_by(iris, annee) %>%
+  summarise(
+    poverty_share = median(poverty_share, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+poverty_ranked <- df_poverty %>%
+  filter(!is.na(poverty_share)) %>%              
+  group_by(annee) %>%
+  mutate(
+    poverty_rank = percent_rank(poverty_share),
+    poverty_rank_good = 1 - poverty_rank
+  ) %>%
+  ungroup()
+
+poverty_overall <- poverty_ranked %>%
+  arrange(iris, annee) %>%
+  group_by(iris) %>%
+  summarise(
+    n_years = n_distinct(annee),
+    start_rank_good = first(poverty_rank_good),  
+    end_rank_good   = last(poverty_rank_good),
+    poverty_rank_change = end_rank_good - start_rank_good,
+    mean_rank_good = mean(poverty_rank_good, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  filter(n_years >= 2) %>%
+  arrange(desc(poverty_rank_change))
+```
+
+```{r}
+index_rev <- income_overall %>%
+  select(iris, income_index_score_1) %>%
+  inner_join(
+    poverty_overall %>% select(iris, poverty_rank_change),
+    by = "iris"
+  ) %>%
+  mutate(
+    z_income  = as.numeric(scale(income_index_score_1)),
+    z_poverty = as.numeric(scale(poverty_rank_change)),
+    index_rev = z_income + z_poverty   
+  ) %>%
+  arrange(desc(index_rev))
+```
