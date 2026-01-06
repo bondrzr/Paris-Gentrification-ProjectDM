@@ -1,0 +1,56 @@
+---
+title: "Gentrification_Score"
+author: "POL + MATEI"
+format: html
+---
+
+# Harmonizing iris across files
+```{r}
+index_price <- iris_overall %>%
+  transmute(
+    iris = CODE_IRIS,
+    index_price
+  )
+
+index_pop <- dynamics_IRIS %>%
+  transmute(
+    iris = iris_2020,
+    index_pop
+  )
+
+index_rev <- index_rev %>%
+  transmute(
+    iris,
+    index_rev
+  )
+
+```
+
+# Only keeping IRIS available in 3 
+```{r}
+gentrif_indices <- index_price %>%
+  inner_join(index_pop, by = "iris") %>%
+  inner_join(index_rev, by = "iris")
+
+```
+
+#Normalising results
+```{r}
+
+gentrif_indices <- gentrif_indices %>%
+  mutate(
+    z_price = as.numeric(scale(index_price)),
+    z_pop   = as.numeric(scale(index_pop)),
+    z_rev   = as.numeric(scale(index_rev))
+  )
+
+```
+
+```{r}
+gentrif_indices <- gentrif_indices %>%
+  mutate(
+    gentrification_index_w = 0.4*z_price + 0.3*z_pop + 0.3*z_rev
+  )
+
+```
+
