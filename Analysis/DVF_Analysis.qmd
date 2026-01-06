@@ -7,8 +7,15 @@ author: "Matei Vasile"
 ```{r}
 library(data.table)
 library(dplyr)
+library(purrr)
+library(broom)
+library(scales)
 library(here)
+```
 
+
+#DVF index
+```{r}
 file <- here("DATA_Processed", "prix_iris_2014_25.rds")
 
 df <- readRDS(file)
@@ -40,5 +47,70 @@ iris_overall <- rel %>%
   arrange(desc(mean_rel_growth))
 
 View(iris_overall)
+```
+
+
+#Population index
+
+#Creating new variables 
+```{r}
+JOB_all <- readRDS(here("DATA_Processed", "JOB_all.rds"))
+
+JOB_all_clean <- JOB_all |>
+  filter(actocc1564 > 0, act1564 > 0) |>
+  mutate(
+    share_csp_sup   = (cadres_1564 + prof_inter_1564) / actocc1564,  
+    share_populaire = (employes_1564 + ouvriers_1564) / actocc1564,
+    share_chom      = chom1564 / act1564
+  )
+```
+
+#New base calculating slopes 
+```{r}
+JOB_gentrification <- JOB_all_clean |>
+  select(
+    iris_2020,
+    annee,
+    share_csp_sup,
+    share_populaire,
+    share_chom
+  )
+
+get_slope <- function(df, var) {
+  lm(as.formula(paste(var, "~ annee")), data = df) |>
+    broom::tidy() |>
+    filter(term == "annee") |>
+    pull(estimate)
+}
+```
+
+```{r}
+dynamics_IRIS <- JOB_gentrification |>
+  group_by(iris_2020) |>
+  filter(n() >= 4) |>
+  nest() |>
+  mutate(
+    slope_CSP_plus = map_dbl(data, ~ get_slope(.x, "share_csp_sup")),
+    slope_CSP_pop  = map_dbl(data, ~ get_slope(.x, "share_populaire")),
+    slope_chom     = map_dbl(data, ~ get_slope(.x, "share_chom"))
+  ) |>
+  select(-data) |>
+  ungroup()
+
+dynamics_IRIS <- dynamics_IRIS |>
+  mutate(
+    Z_CSP_plus = as.numeric(scale(slope_CSP_plus)),
+    Z_CSP_pop  = as.numeric(scale(slope_CSP_pop)),
+    Z_chom     = as.numeric(scale(slope_chom))
+  )
+
+
+dynamics_IRIS <- dynamics_IRIS |>
+  mutate(
+    score_gentri = Z_CSP_plus - Z_CSP_pop - Z_chom
+  ) |>
+  arrange(desc(score_gentri)) 
+
+head(dynamics_IRIS)
 ```
 
