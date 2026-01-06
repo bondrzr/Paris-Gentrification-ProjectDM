@@ -36,7 +36,7 @@ iris_overall <- rel %>%
     index_score = (1 + mean_rel_growth),
     .groups = "drop"
   ) %>%
-  filter(n_years >= 2) %>%
+  filter(n_years >= 5) %>%
   arrange(desc(mean_rel_growth))
 
 View(iris_overall)
