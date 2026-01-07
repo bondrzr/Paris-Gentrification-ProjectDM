@@ -79,4 +79,57 @@ ggplot() +
 
 
 
+```{r}
+gentrif_indices <- readRDS(here("DATA_Processed", "gentrif_indices.rds"))
+```
+
+
+
+
+```{r}
+iris2020 <- st_read(here(
+    "DATA_Raw",
+    "CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020",
+    "CONTOURS-IRIS.shp"
+  ))
+
+```
+
+
+```{r}
+iris_gentri <- iris2020 %>%
+  filter(substr(CODE_IRIS, 1, 2) == "75") %>%  # seulement Paris
+  left_join(gentrif_indices, by = c("CODE_IRIS" = "iris"))
+
+```
+
+```{r}
+library(ggplot2)
+library(viridis)
+
+ggplot() +
+  geom_sf(data = iris_gentri,
+          aes(fill = gentrification_index_w),
+          color = NA) +
+  scale_fill_viridis(
+    option    = "magma",
+    direction = -1,
+    na.value  = "grey85",
+    name      = "Indice de gentrification"
+  ) +
+  theme_minimal() +
+  labs(
+    title    = "Indice de gentrification par IRIS – Paris",
+    subtitle = "IRIS en gris : données manquantes",
+    caption  = "Source : calculs propres à partir de DVF, Insee"
+  ) +
+  theme(
+    panel.grid = element_blank(),
+    axis.text  = element_blank(),
+    axis.title = element_blank()
+  )
+
+```
+
+
 
