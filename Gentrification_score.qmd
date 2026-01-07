@@ -69,4 +69,7 @@ gentrif_indices <- gentrif_indices %>%
       0.3 * z_rev_c
   )
 ```
+```{r}
+saveRDS(gentrif_indices, here("DATA_Processed", "gentrif_indices.rds"))
+```
 
