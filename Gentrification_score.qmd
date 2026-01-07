@@ -5,6 +5,7 @@ format: html
 ---
 
 ```{r}
+library(dplyr)
 library(here)
 dynamics_IRIS <- readRDS(here("DATA_Processed" , "dynamics_IRIS.rds"))
 iris_overall <- readRDS(here("DATA_Processed" , "iris_overall.rds"))
@@ -13,6 +14,7 @@ index_rev <- readRDS(here("DATA_Processed" , "index_rev.rds"))
 
 # Harmonizing iris across files
 ```{r}
+
 index_price <- iris_overall %>%
   transmute(
     iris = CODE_IRIS,
