@@ -1,0 +1,113 @@
+---
+title: "Effect on BPE"
+author: "Pol + Matei"
+format: html
+---
+
+#Loadinf all of our data + required packages
+```{r}
+library(dplyr)
+library(here)
+BPE_Paris_2016 <- readRDS(here("DATA_Processed" , "BPE_Paris_2016_iris.rds"))
+BPE_Paris_2018 <- readRDS(here("DATA_Processed" , "BPE_Paris_2018_iris.rds"))
+BPE_Paris_2024 <- readRDS(here("DATA_Processed" , "BPE_Paris_2024_iris.rds"))
+Gentri_score <- readRDS(here("DATA_Processed" , "gentrif_indices.rds"))
+```
+
+#Making sure that they're the same type 
+```{r}
+BPE_Paris_2016 <- BPE_Paris_2016 %>%
+  mutate(dep = as.character(dep))
+
+BPE_Paris_2018 <- BPE_Paris_2018 %>%
+  mutate(dep = as.character(dep))
+
+BPE_Paris_2024 <- BPE_Paris_2024 %>%
+  mutate(dep = as.character(DEP))
+```
+
+#We're adding the names corresponding to the codes to the 24 base 
+
+```{r}
+nomenclature_2024 <- read_html(here("DATA_Raw", "BPE24_liste_hierarchisee_TYPEQU.html"))
+   
+tables <- html_table(nomenclature_2024, fill = TRUE)
+
+nomenclature_bpe <- tables[[1]] %>%
+  clean_names() %>%
+  rename(code = code,
+         libelle = libelle,
+         description = description
+         ) %>%
+  filter(!is.na(code), code != "")
+
+BPE_Paris_2024 <- BPE_Paris_2024 %>%
+  left_join(
+    nomenclature_bpe %>% select(code, libelle),
+    by = c("TYPEQU" = "code")
+  )
+```
+
+#Reducing bases into a more compact format and harmonising names at the same time 
+```{r}
+BPE_Paris_2016_red <- BPE_Paris_2016 %>%
+  transmute(
+    iris_2020,
+    year = 2016,
+    code = typequ,
+    type = Équipement,
+    nb = nb_equip,
+    geometry
+  )
+
+BPE_Paris_2018_red <- BPE_Paris_2018 %>%
+  transmute(
+    iris_2020 = CODE_IRIS,
+    year = 2018,
+    code = code_type_d_equipements,
+    type = nom_type_d_equipements,
+    nb = nombre_d_equipements,
+    geometry
+  )
+
+BPE_Paris_2024_red <- BPE_Paris_2024 %>%
+  transmute(
+    iris_2020,
+    year = 2024,
+    code = TYPEQU,
+    type = libelle,
+    nb = 1,   
+    geometry
+  )
+
+```
+
+After checking BPE_2018_red we notice one code missing it's equipement type code A506 after checking in the following file 
+<https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.insee.fr/fr/metadonnees/source/fichier/BPE1621_nb_equip_UU2020_DictionnaireVariables.pdf&ved=2ahUKEwiDz5v9s_yRAxW0dqQEHVQKAMQQFnoECBoQAQ&usg=AOvVaw3Hhj0EDBeKS9FA4Cg8yyg->
+
+A506 = PRESSING-LAVERIE AUTOMATIQUE ( this code is kept the same in 2024)
+
+```{r}
+library(dplyr)
+
+BPE_Paris_2018_red <- BPE_Paris_2018_red %>%
+  mutate(
+    type = if_else(code == "A506", 
+                   "PRESSING-LAVERIE AUTOMATIQUE", 
+                   type)
+  )
+```
+
+
+
+#Merging BPE into one base 
+```{r}
+BPE_final <- bind_rows(
+  BPE_Paris_2016_red %>% mutate(year =2016),
+  BPE_Paris_2018_red %>% mutate(year = 2018),
+  BPE_Paris_2024_red %>% mutate(year = 2024),
+)
+```
+
+
+

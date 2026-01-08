@@ -163,13 +163,17 @@ saveRDS(
 #BPE for 2018
 
 ```{r}
+library(janitor)
+library(data.table)
 table_passage <- fread(
   here("DATA_Raw", "table_passage_1999_2022.csv")
 ) %>%
   clean_names()
+BPE_2018 <-fread(here("DATA_Raw" , "bpe-2018.csv"))
 ```
 
 ```{r}
+
 
 BPE_Paris_2018 <- BPE_2018 %>%
   clean_names() %>%

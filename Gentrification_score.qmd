@@ -63,12 +63,13 @@ gentrif_indices <- gentrif_indices %>%
     z_price_c = cap(z_price, 3),
     z_pop_c   = cap(z_pop, 3),
     z_rev_c   = cap(z_rev, 3),
-    gentrification_index_w =
+    gentrification_score =
       0.4 * z_price_c +
       0.3 * z_pop_c +
       0.3 * z_rev_c
   )
 ```
+
 ```{r}
 saveRDS(gentrif_indices, here("DATA_Processed", "gentrif_indices.rds"))
 ```
