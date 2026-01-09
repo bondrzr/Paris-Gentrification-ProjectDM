@@ -8,6 +8,9 @@ format: html
 ```{r}
 library(dplyr)
 library(here)
+library(janitor)
+library(rvest)
+library(stringi)
 BPE_Paris_2016 <- readRDS(here("DATA_Processed" , "BPE_Paris_2016_iris.rds"))
 BPE_Paris_2018 <- readRDS(here("DATA_Processed" , "BPE_Paris_2018_iris.rds"))
 BPE_Paris_2024 <- readRDS(here("DATA_Processed" , "BPE_Paris_2024_iris.rds"))
@@ -27,7 +30,6 @@ BPE_Paris_2024 <- BPE_Paris_2024 %>%
 ```
 
 #We're adding the names corresponding to the codes to the 24 base 
-
 ```{r}
 nomenclature_2024 <- read_html(here("DATA_Raw", "BPE24_liste_hierarchisee_TYPEQU.html"))
    
@@ -52,7 +54,7 @@ BPE_Paris_2024 <- BPE_Paris_2024 %>%
 ```{r}
 BPE_Paris_2016_red <- BPE_Paris_2016 %>%
   transmute(
-    iris_2020,
+    iris = iris_2020,
     year = 2016,
     code = typequ,
     type = Équipement,
@@ -62,7 +64,7 @@ BPE_Paris_2016_red <- BPE_Paris_2016 %>%
 
 BPE_Paris_2018_red <- BPE_Paris_2018 %>%
   transmute(
-    iris_2020 = CODE_IRIS,
+    iris = CODE_IRIS,
     year = 2018,
     code = code_type_d_equipements,
     type = nom_type_d_equipements,
@@ -72,7 +74,7 @@ BPE_Paris_2018_red <- BPE_Paris_2018 %>%
 
 BPE_Paris_2024_red <- BPE_Paris_2024 %>%
   transmute(
-    iris_2020,
+    iris = iris_2020,
     year = 2024,
     code = TYPEQU,
     type = libelle,
@@ -82,7 +84,7 @@ BPE_Paris_2024_red <- BPE_Paris_2024 %>%
 
 ```
 
-After checking BPE_2018_red we notice one code missing it's equipement type code A506 after checking in the following file 
+After checking BPE_2018_red we notice one code missing it's equipement type code A506 after checking in the following file:
 <https://www.google.com/url?sa=t&source=web&rct=j&opi=89978449&url=https://www.insee.fr/fr/metadonnees/source/fichier/BPE1621_nb_equip_UU2020_DictionnaireVariables.pdf&ved=2ahUKEwiDz5v9s_yRAxW0dqQEHVQKAMQQFnoECBoQAQ&usg=AOvVaw3Hhj0EDBeKS9FA4Cg8yyg->
 
 A506 = PRESSING-LAVERIE AUTOMATIQUE ( this code is kept the same in 2024)
@@ -100,14 +102,50 @@ BPE_Paris_2018_red <- BPE_Paris_2018_red %>%
 
 
 
-#Merging BPE into one base 
+#Merging BPE into one base + making sure everything is written the same way 
 ```{r}
 BPE_final <- bind_rows(
   BPE_Paris_2016_red %>% mutate(year =2016),
   BPE_Paris_2018_red %>% mutate(year = 2018),
   BPE_Paris_2024_red %>% mutate(year = 2024),
 )
+
+BPE_final <- BPE_final %>%
+  mutate(
+    type = type %>%
+      tolower() %>%
+      stringi::stri_trans_general("Latin-ASCII")
+  )
+
+```
+
+Our analysis limits itself to the effect on the surround businesses ( Tissu commercial) this means we don't need to keep all the data here but the only that concerns Businesses:
+SO we'll only keep codes beginning with 
+-A5	"AUTRES SERVICES"	Ce sont des commerces de services de proximité dans différentes branches : coiffure, esthétique, pressing, restauration, intérim, vétérinaire 
+-B "COMMERCES"	Ce domaine est divisé en trois : les grandes surfaces, les commerces alimentaires et des commerces spécialisés non-alimentaires (qui ne sont pas présents dans le domaine A).
+
+```{r}
+library(dplyr)
+
+BPE_final_filtered <- BPE_final %>%
+  filter(grepl("^B|^A5", code))
+
 ```
 
 
+
+```{r}
+library(dplyr)
+
+code_uniques <- BPE_final_filtered %>%
+  group_by(type) %>%             # regroupe par type
+  summarise(
+    n_codes = n_distinct(code), # nombre de codes distincts
+    codes_list = paste(unique(code), collapse = ", ") # liste des codes
+  ) %>%
+  arrange(type)                  # tri par type
+
+code_summary
+
+```
 
