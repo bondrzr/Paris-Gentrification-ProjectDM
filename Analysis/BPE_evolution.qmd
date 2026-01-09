@@ -78,9 +78,13 @@ BPE_Paris_2024_red <- BPE_Paris_2024 %>%
     year = 2024,
     code = TYPEQU,
     type = libelle,
-    nb = 1,   
+    nb = NBEQUIDENT,   
     geometry
   )
+
+BPE_Paris_2024_red <- BPE_Paris_2024_red %>%
+  mutate(nb = if_else(is.na(nb), 1L, nb))
+
 
 ```
 

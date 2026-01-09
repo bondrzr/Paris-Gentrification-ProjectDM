@@ -43,7 +43,7 @@ This file is too big (1,4GO) to be committed onto GITHUB but we've added a reduc
 bpe_keep <- c(
   "AN", "DEPCOM", "DEP", "REG", "LIBCOM",
   "DCIRIS", "LONGITUDE", "LATITUDE",
-  "LAMBERT_X", "LAMBERT_Y", "QUALITE_XY", "QUALITE_GEOLOC", "EPSG",
+  "LAMBERT_X", "LAMBERT_Y", "QUALITE_XY", "NBEQUIDENT" , "QUALITE_GEOLOC", "EPSG",
   "DOM", "SDOM", "TYPEQU", "TYPE", "CATEGORIE"
 )
 
