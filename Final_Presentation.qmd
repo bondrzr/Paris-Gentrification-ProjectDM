@@ -1,0 +1,74 @@
+---
+title: "Paris_Gentrification_Presentation"
+author: "Paul Joahny and Matei Vasile"
+format: html
+---
+
+# 1-Research Question Presentation 
+
+Our research question is: How does gentrification in the Paris area affect the "Tissu comercial"?
+
+Gentrification is a social phenomenon , as many social phenomenon it has different definitions we'll definie it as the process by which a poor neighborhood in a city is replaced by a new population. This population is 
+
+
+
+the process by which a poor neighborhood in a city is changed by people who have money, including esp. the improvement or replacement of buildings
+
+The idea is to see how gentrification can reshape neighbourhoods in terms of retail/service supply. As higher income populations move into formerly lower income or mixed income areas, we expect to observe a shift in the available businesses and more generally the commercial mix: growth of cafes, restaurants, shops, boutiques, coworking spaces etc with a subsequent decrease in traditional proximity retail. We will also attempt to observe whether new types of businesses emerge specifically tailored to a wealthier population.
+
+We will do this by firstly identifying areas (IRIS units) in which clear signs of gentrification have occurred. To do this we will create some indicators for price per sqm, median income levels, poverty rates, income disparity etc. Then using these to identify areas that for example have been previously below the average price per sqm and are now above that, we can note them as gentrified areas.
+
+Once we have identified which IRIS units have undergone gentrification, we will observe changes in the "tissu commerical" of these areas using the BPE (Base Permanente des Equipements). The BPE dataset is a record of the quantity and type of establishments. By analysing changes in the BPE for our identified gentrified areas we can see whether new business categories emerge as the distribution of income changes, which type of businesses increase in quantity, which types decline.
+
+This method of first identifying gentrified areas, then analysing the change in types and quantities of businesses, allows us to observe the effect of gentrification on the "tissu commerical" of Paris. 
+
+
+
+
+# 2-Data set descriptions 
+
+a)FILOSOFI
+
+The filosofi database, offers specific estimates of household income, poverty, and inequality at area levels such as IRIS. It combines fiscal data and social benefit data to estimate income before and after redistribution, adjusted per household unit to account for household size and structure. Filosofi replaces older local income datasets and provides useful indicators like income deciles, medians, poverty rates and inequality measures like the Gini coefficient. 
+
+b)IRIS Historical Change
+
+The "Historique des codes IRIS" dataset shows a cross-reference of IRIS codes in France from 1999-2022, revealing how these neighbourhood-level statistical units have changed over time. It offers a "table de passage" that links old and new IRIS identifiers following boundary modifications, splits, or regroupings. This resource allows for researches to align socio-economic data over the years despite changes in IRIS definitions.
+
+c)IRIS Shapefile
+
+The IRIS shapefile provides the official polygon boundaries for all IRIS units in France. The 2020 "France entiere" shapefile offers total coverage of France and is the standard geographic reference for mapping IRIS-level data. It is broadly used to link datasets (like FILOSOFI and DVF) to their corresponding neighbourhoods.
+
+d)DVF
+
+The "Demandes de Valeurs Foncieres" (DVF) dataset, which is available through data.gouv.fr, contains property transaction records for France and includes geographic information when available. We have data sets from 2014-2018 and 2020-2025. DVF provides valuable information such as transaction dates, sale values, property types, surface areas. It can be used to analyse real estate information, such as change in price per square metre. In our project, DVF enables us to construct indicators of housing price changes at the IRIS level.
+
+e)BPE
+
+The "Base Permanente des Equipements" (BPE) dataset for Ile de France. It provides an inventory of public and private facilities, amenities and commercial establishments for the region of France.
+
+f)Activity of residents 
+
+This base « Activité des résidents » gives data on different characteristics of the workers of a given neighborhood. This could be age , sex , CSP category.
+
+
+# 3-Data analysis 
+
+The main part of our analysis was finding  a way to measure something you can't directly observe: gentrification. To be able to do that we chose to measure it trough 3 different dimensions. Revenue, Population and Prices.
+
+Population : This whole dimension is looking at who are the people living in said neighbourhoods. In france there's a good indicator called CSP(Catégorie Socio Profesionelle) created and monitored by INSEE this works as a statistical categorisation of jobs of a similar social environment.These categories are 
+
+Employees-Employés : This is Ce groupe socioprofessionnel rassemble des professions aux fonctions très variées (administratives, commerciales, de services aux particuliers, de surveillance et sécurité, etc.) dont il est difficile de trouver une définition commune si ce n'est qu'elles n'ont pas ou peu de responsabilité d'encadrement. Ce groupe socioprofessionnel est composé uniquement de salariés, à de rares exceptions près.
+
+
+Workers-Ouvriers This represents that work in the industrial secrors 
+Ce groupe socioprofessionnel regroupe des personnes qui exercent des fonctions d'exécution dans le cadre d'une division poussée du travail dans les secteurs industriels, de services à l'industrie (nettoyage, maintenance, tri, expédition, etc.) ou des tâches manuelles dans les secteurs artisanaux ou agricoles. Il ne comprend que des salariés, qui peuvent être employés par des établissements de nature publique ou privée.
+
+This is very useful for our analysis some of theses categories represent a 
+
+
+We chose to measure trough an indicator with a score, gentrification at least as we see it isn't a binary variable it's a relative notion. It makes way more sense to see it as which neighbourhood is more gentrified than an other instead of simply saying which one is or isn't. 
+To do this we built an indicator that itself is composed of 3 
+
+
+# 4-Conclusion 
