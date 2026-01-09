@@ -170,6 +170,8 @@ BPE_final_clean <- BPE_final_filtered %>%
     )
   )
 
+saveRDS(BPE_final_clean, here( "DATA_Processed" , "BPE_final_clean.rds" ))
+
 ```
 
 #useful to check for different 
