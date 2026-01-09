@@ -21,17 +21,173 @@ data_combined <- BPE_final_clean %>%
 data_combined <- data_combined %>%
   mutate(score_quartile = ntile(gentrification_score, 4))  
 
+saveRDS(data_combined , here("DATA_Processed" , "data_combined.rds"))
+```
+
+```{r}
+
+
+data_combined %>%
+  group_by(score_quartile, type_clean) %>%
+  summarise(nb_commerces = sum(nb), .groups = "drop") %>%
+  group_by(score_quartile) %>%
+  mutate(part = nb_commerces / sum(nb_commerces))
 
 ```
 
 ```{r}
-summary_type <- data_combined %>%
-  group_by(year, score_quartile, type_clean) %>%
-  summarise(n = n(), .groups = "drop")
-
-summary_type
+df <- data_combined %>%
+  group_by(score_quartile, type_clean) %>%
+  summarise(nb_commerces = sum(nb), .groups = "drop") %>%
+  group_by(score_quartile) %>%
+  mutate(part = nb_commerces / sum(nb_commerces))
 
 ```
 
 
+
+
+```{r}
+library(ggplot2)
+
+ggplot(df, aes(x = score_quartile, y = part, fill = type_clean)) +
+  geom_col() +
+  labs(
+    x = "Quartile de gentrification",
+    y = "Part des commerces",
+    fill = "Type de commerce"
+  )
+
+
+```
+
+
+```{r}
+data_combined <- data_combined %>%
+  mutate(
+    categorie = case_when(
+  
+      type_clean %in% c(
+        "restaurant–restauration–rapide"
+      ) ~ "Restauration",
+      
+      
+      type_clean %in% c(
+        "boulangerie-patisserie",
+        "boucherie charcuterie",
+        "poissonnerie",
+        "epicerie",
+        "commerce specialise en fruits et legumes",
+        "produits surgeles",
+        "superette",
+        "supermarche",
+        "supermarche et magasin multi-commerce",
+        "hypermarche et grand magasin",
+        "autres commerces alimentaires"
+      ) ~ "Proximité",
+      
+    
+      type_clean %in% c(
+        "coiffure",
+        "institut de beaute–onglerie",
+        "parfumerie–cosmetique",
+        "pressing–laverie automatique",
+        "blanchisserie–teinturerie",
+        "agence de travail temporaire",
+        "agence immobiliere",
+        "veterinaire"
+      ) ~ "Services",
+      
+    
+      type_clean %in% c(
+        "librairie–papeterie–journaux",
+        "magasin de vetements",
+        "magasin de chaussures",
+        "magasin d'optique",
+        "horlogerie–bijouterie",
+        "maroquinerie et articles de voyage",
+        "magasin de meubles",
+        "magasin d'equipements du foyer",
+        "magasin d'electromenager et de mat. audio–video",
+        "magasin electromenager, materiel audio video informatique",
+        "magasin de materiels de telecommunication",
+        "commerce de jeux et jouets",
+        "magasin d'art. de sports et de loisirs",
+        "magasin d'articles de sports et de loisirs",
+        "commerce de biens d'occasion",
+        "commerce de tissus et mercerie",
+        "droguerie quincaillerie bricolage",
+        "grande surface de bricolage",
+        "magasin de revetements murs et sols",
+        "magasin de materiel medical et orthopedique",
+        "commerce de boissons"
+      ) ~ "Commerce spécialisé",
+      
+      TRUE ~ "Autres"
+    )
+  )
+
+```
+
+
+```{r}
+df_cat <- data_combined %>%
+  group_by(score_quartile, categorie) %>%
+  summarise(nb_commerces = sum(nb), .groups = "drop") %>%
+  group_by(score_quartile) %>%
+  mutate(part = nb_commerces / sum(nb_commerces))
+
+```
+
+
+```{r}
+ggplot(df_cat, aes(x = factor(score_quartile), y = part, fill = categorie)) +
+  geom_col(position = "fill") +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    x = "Quartile de gentrification",
+    y = "Part des commerces",
+    fill = "Catégorie",
+    title = "Composition commerciale selon le niveau de gentrification"
+  ) +
+  theme_minimal()
+
+```
+
+```{r}
+df_cat %>%
+  filter(categorie == "Restauration") %>%
+  ggplot(aes(x = score_quartile, y = part)) +
+  geom_line(group = 1) +
+  geom_point(size = 2) +
+  scale_y_continuous(labels = scales::percent) +
+  labs(
+    x = "Quartile de gentrification",
+    y = "Part des commerces",
+    title = "Part de la restauration selon la gentrification"
+  ) +
+  theme_minimal()
+
+```
+
+```{r}
+data_combined %>%
+  group_by(score_quartile, categorie, iris) %>%
+  summarise(nb_iris = sum(nb), .groups = "drop") %>%
+  group_by(score_quartile, categorie) %>%
+  summarise(nb_moyen = mean(nb_iris), .groups = "drop") %>%
+  ggplot(aes(x = factor(score_quartile), y = nb_moyen, fill = categorie)) +
+  geom_col(position = "dodge") +
+  labs(
+    x = "Quartile de gentrification",
+    y = "Nombre moyen de commerces par IRIS",
+    fill = "Catégorie"
+  ) +
+  theme_minimal()
+
+```
+
+```{r}
+
+```
 
