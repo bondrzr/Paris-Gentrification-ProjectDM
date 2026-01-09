@@ -1,18 +1,14 @@
 ---
-title: "Paris_Gentrification_Presentation"
+title: "Paris Gentrification Presentation"
 author: "Paul Joahny and Matei Vasile"
-format: html
+format: pdf
 ---
 
-# 1-Research Question Presentation 
+# 1. Research Question
 
-Our research question is: How does gentrification in the Paris area affect the "Tissu comercial"?
+This report attempts to answer the question \textbf{how does gentrification in the Paris area affect the "Tissu comercial"?} The objective of this report is to assess how the development and structure of businesses changes from gentrified neighbourhoods to those that are not.
 
-Gentrification is a social phenomenon , as many social phenomenon it has different definitions we'll definie it as the process by which a poor neighborhood in a city is replaced by a new population. This population is 
-
-
-
-the process by which a poor neighborhood in a city is changed by people who have money, including esp. the improvement or replacement of buildings
+Gentrification is a social phenomenon , as many social phenomenon it has different definitions we'll define it as the process by which a poor neighborhood in a city is replaced by a new population. We can evaluate this by looking at the development of the population of a neighbourhood overtime. This is completed via a process in which a poor neighborhood in a city is changed by people who have money, including especially the improvement or replacement of buildings and businesses.
 
 The idea is to see how gentrification can reshape neighbourhoods in terms of retail/service supply. As higher income populations move into formerly lower income or mixed income areas, we expect to observe a shift in the available businesses and more generally the commercial mix: growth of cafes, restaurants, shops, boutiques, coworking spaces etc with a subsequent decrease in traditional proximity retail. We will also attempt to observe whether new types of businesses emerge specifically tailored to a wealthier population.
 
@@ -25,7 +21,7 @@ This method of first identifying gentrified areas, then analysing the change in 
 
 
 
-# 2-Data set descriptions 
+# 2. Dataset Descriptions 
 
 a)FILOSOFI
 
@@ -52,7 +48,7 @@ f)Activity of residents
 This base « Activité des résidents » gives data on different characteristics of the workers of a given neighborhood. This could be age , sex , CSP category.
 
 
-# 3-Data analysis 
+# 3. Data Analysis 
 
 The main part of our analysis was finding  a way to measure something you can't directly observe: gentrification. To be able to do that we chose to measure it trough 3 different dimensions. Revenue, Population and Prices.
 
@@ -70,5 +66,15 @@ This is very useful for our analysis some of theses categories represent a
 We chose to measure trough an indicator with a score, gentrification at least as we see it isn't a binary variable it's a relative notion. It makes way more sense to see it as which neighbourhood is more gentrified than an other instead of simply saying which one is or isn't. 
 To do this we built an indicator that itself is composed of 3 
 
+Prices: From the DVF dataset we observed changes in housing prices over time. Using price per sqm we can create an indicator attempting to rank iris codes by the distance at which their growth in price sqm per year diverges from the mean. To do this first we created an
 
-# 4-Conclusion 
+Revenue: 
+From the filosofi dataset we constructed another indicator. First we looked at income. Using median income values for each IRIS and year we calculate a per year income growth rate for an iris between two years. From this we can create a Paris wide average growth from which we can determine the difference of the growth rate of income in a specific IRIS from this city wide average. The index is thus based on how an IRIS beats this city wide average over all years. This accounts for half of the total indicator created from FiloSofi.
+
+The second part is constructed from the percentage of the population who have an income deemed under the "poverty line". Each IRIS has a value of its poverty share each year. For each year we can rank all the IRIS codes on this poverty share. From this we can observe how this changes from year to year and create a cumulative score of change in this poverty share each year. Those IRIS that exceeded the average score highly on the final poverty rank change index.
+
+Conclude (how these two were summed)
+
+Final Construction of the GentriScore: (How all were summed)
+
+# 4. Conclusion 
