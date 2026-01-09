@@ -138,14 +138,50 @@ BPE_final_filtered <- BPE_final %>%
 library(dplyr)
 
 code_uniques <- BPE_final_filtered %>%
-  group_by(type) %>%             # regroupe par type
-  summarise(
-    n_codes = n_distinct(code), # nombre de codes distincts
-    codes_list = paste(unique(code), collapse = ", ") # liste des codes
-  ) %>%
-  arrange(type)                  # tri par type
+  st_drop_geometry() %>%
+  group_by(type) %>%
+  summarise(n_codes = n_distinct(code),
+            codes_list = paste(unique(code), collapse = ", ")
+            ) %>% arrange(type)
 
-code_summary
+write.csv2(code_uniques, here("DATA_Processed", "code_uniques.csv"), 
+row.names = FALSE, fileEncoding = "UTF-8")
+
+```
+
+#Merging names when small differences across different databases
+```{r}
+library(dplyr)
+library(stringr)
+
+BPE_final_clean <- BPE_final_filtered %>%
+  mutate(
+    type_clean = case_when(
+      str_detect(type, regex("boulangerie", ignore_case = TRUE)) ~ "boulangerie-patisserie",
+      str_detect(type, regex("fleuriste", ignore_case = TRUE)) ~ "fleuriste-jardinerie-animalerie",
+      str_detect(type, regex("horlogerie", ignore_case = TRUE)) ~ "horlogerie-bijouterie",
+      str_detect(type, regex("hypermarche", ignore_case = TRUE)) ~ "hypermarche et grand magasin",
+      str_detect(type, regex("institut de beaute|soins de beaute", ignore_case = TRUE)) ~ "institut de beaute-onglerie",
+      str_detect(type, regex("librairie|papeterie", ignore_case = TRUE)) ~ "librairie-papeterie-journaux",
+      str_detect(type, regex("parfumerie|cosmetique", ignore_case = TRUE)) ~ "parfumerie-cosmetique",
+      str_detect(type, regex("restaurant", ignore_case = TRUE)) ~ "restaurant-restauration-rapide",
+      str_detect(type, regex("service", ignore_case = TRUE)) ~ "station-service",
+      TRUE ~ type
+    )
+  )
+
+```
+
+#useful to check for different 
+```{r}
+code_uniques_clean <- BPE_final_clean %>%
+  st_drop_geometry() %>%
+  group_by(type_clean) %>%
+  summarise(
+    n_codes = n_distinct(code),
+    codes_list = paste(unique(code), collapse = ", ")
+  ) %>%
+  arrange(type_clean)
 
 ```
 
