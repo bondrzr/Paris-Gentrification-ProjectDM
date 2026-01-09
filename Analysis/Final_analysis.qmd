@@ -1,0 +1,37 @@
+---
+title: "Final analysis"
+author: "Paul JOAHNY and Matei Vasile"
+format: html
+---
+
+```{r}
+library(here)
+BPE_final_clean <- readRDS(here("DATA_Processed" , "BPE_final_clean.rds"))
+gentrif_indices <- readRDS(here("DATA_Processed", "gentrif_indices.rds")) 
+
+```
+
+
+```{r}
+library(dplyr)
+
+data_combined <- BPE_final_clean %>%
+  left_join(gentrif_indices %>% select(iris, gentrification_score), by = "iris")
+
+data_combined <- data_combined %>%
+  mutate(score_quartile = ntile(gentrification_score, 4))  
+
+
+```
+
+```{r}
+summary_type <- data_combined %>%
+  group_by(year, score_quartile, type_clean) %>%
+  summarise(n = n(), .groups = "drop")
+
+summary_type
+
+```
+
+
+
