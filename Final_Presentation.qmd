@@ -15,7 +15,7 @@ library(ggplot2)
 #| echo: false
 #| message: false
 #| warning: false
-iris_overall <- readRDS(here("DATA_processed", "iris_overall.rds"))
+index_rev <- readRDS(here("DATA_processed", "index_rev.rds"))
 ```
 
 
@@ -92,17 +92,17 @@ We first look at mdeian income as a measure of economic change that can reveal g
 #| echo: false
 #| message: false
 #| warning: false
-iris_overall %>%
-  arrange(desc(index_price)) %>%
-  select(CODE_IRIS, index_price) %>%
+index_rev %>%
+  arrange(desc(income_index_score_1)) %>%
+  select(iris, income_index_score_1) %>%
   slice_head(n = 10)
 ```
 ```{r}
 #| echo: false
 #| message: false
 #| warning: false
-ggplot(iris_overall, aes(x = index_price)) +
-  geom_histogram(bins = 30, fill = "steelblue") +
+ggplot(index_rev, aes(x = income_index_score_1)) +
+  geom_histogram(bins = 30, fill = "steelblue", colour = "black") +
   labs(
     title = "Distribution of Income Index",
     x = "Income Index (base = 1)",
@@ -112,7 +112,35 @@ ggplot(iris_overall, aes(x = index_price)) +
 ```
 
 
-The second part is constructed from the percentage of the population who have an income deemed under the "poverty line". Each IRIS has a value of its poverty share each year. For each year we can rank all the IRIS codes on this poverty share. From this we can observe how this changes from year to year and create a cumulative score of change in this poverty share each year. Those IRIS that exceeded the average score highly on the final poverty rank change index.
+The second part is constructed from the percentage of the population who have an income deemed under the "poverty line". 
+
+For each IRIS and year, we observe a poverty share P. For each year, all IRIS are ranked by their poverty share thus higher ranks correspond to higher poverty and lower ranks correspond to lower poverty. We then invert the ranking such that higher values indicate lower poverty (improvement). To observe change over time, we compute the change in relative poverty position between the first and last observed years. 
+
+Positive values indicate that an IRIS moved toward the low-poverty end of the Paris wide distribution, while negative values indicate increasing relative poverty. This captures relative displacement or upgrading which can show gentrification.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+index_rev %>%
+  arrange(desc(poverty_rank_change)) %>%
+  select(iris, poverty_rank_change) %>%
+  slice_head(n = 10)
+
+ggplot(index_rev, aes(x = poverty_rank_change)) +
+  geom_histogram(
+    bins = 30,
+    fill = "salmon",
+    color = "black"
+  ) +
+  labs(
+    title = "Distribution of Poverty Rank Change",
+    x = "Poverty Rank Change",
+    y = "Number of IRIS"
+  ) +
+  theme_minimal()
+```
+
 
 Finally create a final index based on the two parts "revenue" and "poverty share". We do this by standardising each indicator such that they are both Z distributed. Thus we create a weighted linear combination concluding with the final index S = 0.6Z(inc) + 0.4Z(pov), a higher S indicates a stronger improvement than average of income changes and poverty share changes.
 
