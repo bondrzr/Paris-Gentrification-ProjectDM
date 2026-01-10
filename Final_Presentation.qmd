@@ -55,27 +55,27 @@ This method of first identifying gentrified areas, then analysing the change in 
 
 # 2. Dataset Descriptions 
 
-a)FILOSOFI
+a) FILOSOFI
 
 The filosofi database, offers specific estimates of household income, poverty, and inequality at area levels such as IRIS. It combines fiscal data and social benefit data to estimate income before and after redistribution, adjusted per household unit to account for household size and structure. Filosofi replaces older local income datasets and provides useful indicators like income deciles, medians, poverty rates and inequality measures like the Gini coefficient. 
 
-b)IRIS Historical Change
+b) IRIS Historical Change
 
 The "Historique des codes IRIS" dataset shows a cross-reference of IRIS codes in France from 1999-2022, revealing how these neighbourhood-level statistical units have changed over time. It offers a "table de passage" that links old and new IRIS identifiers following boundary modifications, splits, or regroupings. This resource allows for researches to align socio-economic data over the years despite changes in IRIS definitions.
 
-c)IRIS Shapefile
+c) IRIS Shapefile
 
 The IRIS shapefile provides the official polygon boundaries for all IRIS units in France. The 2020 "France entiere" shapefile offers total coverage of France and is the standard geographic reference for mapping IRIS-level data. It is broadly used to link datasets (like FILOSOFI and DVF) to their corresponding neighbourhoods.
 
-d)DVF
+d) DVF
 
 The "Demandes de Valeurs Foncieres" (DVF) dataset, which is available through data.gouv.fr, contains property transaction records for France and includes geographic information when available. We have data sets from 2014-2018 and 2020-2025. DVF provides valuable information such as transaction dates, sale values, property types, surface areas. It can be used to analyse real estate information, such as change in price per square metre. In our project, DVF enables us to construct indicators of housing price changes at the IRIS level.
 
-e)BPE
+e) BPE
 
 The "Base Permanente des Equipements" (BPE) dataset for Ile de France. It provides an inventory of public and private facilities, amenities and commercial establishments for the region of France.
 
-f)Activity of residents 
+f) Activity of residents 
 
 This base « Activité des résidents » gives data on different characteristics of the workers of a given neighborhood. This could be age , sex , CSP category.
 
@@ -84,24 +84,23 @@ This base « Activité des résidents » gives data on different characteristics
 
 The main part of our analysis was finding  a way to measure something you can't directly observe: gentrification. To be able to do that we chose to measure it trough 3 different dimensions. Revenue, Population and Prices.
 
-Population : This whole dimension is looking at who are the people living in said neighbourhoods. In france there's a good indicator called CSP(Catégorie Socio Profesionelle) created and monitored by INSEE this works as a statistical categorisation of jobs of a similar social environment.These categories are 
+Population: This whole dimension is looking at who are the people living in said neighbourhoods. In france there's a good indicator called CSP(Catégorie Socio Profesionelle) created and monitored by INSEE this works as a statistical categorisation of jobs of a similar social environment.These categories are 
 
-Employees-Employés : This is Ce groupe socioprofessionnel rassemble des professions aux fonctions très variées (administratives, commerciales, de services aux particuliers, de surveillance et sécurité, etc.) dont il est difficile de trouver une définition commune si ce n'est qu'elles n'ont pas ou peu de responsabilité d'encadrement. Ce groupe socioprofessionnel est composé uniquement de salariés, à de rares exceptions près.
+Employees-Employés: Ce groupe socioprofessionnel rassemble des professions aux fonctions très variées (administratives, commerciales, de services aux particuliers, de surveillance et sécurité, etc.) dont il est difficile de trouver une définition commune si ce n'est qu'elles n'ont pas ou peu de responsabilité d'encadrement. Ce groupe socioprofessionnel est composé uniquement de salariés, à de rares exceptions près.
 
 
-Workers-Ouvriers This represents that work in the industrial secrors 
-Ce groupe socioprofessionnel regroupe des personnes qui exercent des fonctions d'exécution dans le cadre d'une division poussée du travail dans les secteurs industriels, de services à l'industrie (nettoyage, maintenance, tri, expédition, etc.) ou des tâches manuelles dans les secteurs artisanaux ou agricoles. Il ne comprend que des salariés, qui peuvent être employés par des établissements de nature publique ou privée.
+Workers-Ouvriers: Ce groupe socioprofessionnel regroupe des personnes qui exercent des fonctions d'exécution dans le cadre d'une division poussée du travail dans les secteurs industriels, de services à l'industrie (nettoyage, maintenance, tri, expédition, etc.) ou des tâches manuelles dans les secteurs artisanaux ou agricoles. Il ne comprend que des salariés, qui peuvent être employés par des établissements de nature publique ou privée.
 
 This is very useful for our analysis some of theses categories represent a 
 
 
-We chose to measure trough an indicator with a score, gentrification at least as we see it isn't a binary variable it's a relative notion. It makes way more sense to see it as which neighbourhood is more gentrified than an other instead of simply saying which one is or isn't. 
-To do this we built an indicator that itself is composed of 3 
+We chose to measure through an indicator with a score, gentrification at least as we see it isn't a binary variable it's a relative notion. It makes more sense to see it as which neighbourhood is more gentrified than an other instead of simply saying which one is or isn't. 
+To do this we built an indicator that itself is composed of 3 different datasets.
 
 # a. Prices
 
 This indicator was built from 2 distinct DVF databases. One from 2014 to 2018 and one from 2020 to the first semester of 2025. Respectively "DVF_Paris_2014_18" and "DVF_Paris_2020_25". These two bases represented all property transactions records for the Paris region ( this was done after a good amount of filtering). It was important to make sure these two bases had treatable data so we had to limit a few parameters, getting rid of  anything too small or anything too big ( needed a certain amount of square meters excluding closets or mansions).
-We could then build a price/squaremeter column this was done quite simply 
+We could then build a price per square meter column this was done quite simply 
 
 $$
 \text{prix\_m2} = \frac{\text{valeur fonciere}}{\text{surface\_reelle\_bati}}
