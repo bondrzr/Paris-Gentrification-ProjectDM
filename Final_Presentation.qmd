@@ -16,7 +16,7 @@ library(ggplot2)
 library(dplyr)
 library(sf)
 library(viridis)
-
+library(stringr)
 ```
 ```{r}
 #| echo: false
@@ -32,6 +32,7 @@ iris2020 <- st_read(here("DATA_Raw" , "CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020", "
   filter(substr(CODE_IRIS, 1, 2) == "75") |>
   select(CODE_IRIS, NOM_IRIS)
 prix_iris_2014_18 <- readRDS(here("DATA_Processed", "prix_iris_2014_18.rds"))
+data_combined <- readRDS(here("DATA_processed", "data_combined.rds"))
 ```
 
 
@@ -455,3 +456,85 @@ Finally, some activities still appear under slightly different names across year
 
 
 # 4. Conclusion 
+
+While we have clearly been able to contruct an index that observes gentrification dynamics from residential prices, income structure, and population composition, these observations do not translate into substantial results of changes in the BPE.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+data_combined <- data_combined %>%
+  mutate(
+    categorie = case_when(
+      str_detect(type_clean, regex("restaurant", ignore_case = TRUE)) ~ "Restauration",
+      type_clean %in% c(
+        "boulangerie-patisserie", "boucherie charcuterie", "poissonnerie", 
+        "epicerie", "commerce specialise en fruits et legumes", "produits surgeles", 
+        "superette", "supermarche", "supermarche et magasin multi-commerce", 
+        "hypermarche et grand magasin", "autres commerces alimentaires"
+      ) ~ "Proximity",
+      type_clean %in% c(
+        "coiffure", "institut de beaute–onglerie", "parfumerie–cosmetique", 
+        "pressing–laverie automatique", "blanchisserie–teinturerie", 
+        "agence de travail temporaire", "agence immobiliere", "veterinaire"
+      ) ~ "Services",
+      type_clean %in% c(
+        "librairie–papeterie–journaux", "magasin de vetements", "magasin de chaussures",
+        "magasin d'optique", "horlogerie–bijouterie", "maroquinerie et articles de voyage",
+        "magasin de meubles", "magasin d'equipements du foyer",
+        "magasin d'electromenager et de mat. audio–video",
+        "magasin electromenager, materiel audio video informatique",
+        "magasin de materiels de telecommunication",
+        "commerce de jeux et jouets", "magasin d'art. de sports et de loisirs",
+        "magasin d'articles de sports et de loisirs", "commerce de biens d'occasion",
+        "commerce de tissus et mercerie", "droguerie quincaillerie bricolage",
+        "grande surface de bricolage", "magasin de revetements murs et sols",
+        "magasin de materiel medical et orthopedique", "commerce de boissons"
+      ) ~ "Specialised Businesses",
+      TRUE ~ "Other"
+    )
+  )
+
+
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+df_quartiles <- data_combined %>%
+  filter(!is.na(score_quartile)) %>%   
+  group_by(score_quartile, year, categorie) %>%
+  summarise(nb_commerces = sum(nb, na.rm = TRUE), .groups = "drop") %>%
+  group_by(score_quartile, year) %>%
+  mutate(part = nb_commerces / sum(nb_commerces))
+
+```
+
+
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+ggplot(df_quartiles, aes(x = factor(year), y = part, fill = categorie)) +
+  geom_col() +
+  scale_y_continuous(labels = scales::percent) +
+  facet_wrap(~ score_quartile, nrow = 1, labeller = labeller(score_quartile = 
+                                                               c("1" = "Q1 Low gentrification",
+                                                                 "2" = "Quartile 2",
+                                                                 "3" = "Quartile 3",
+                                                                 "4" = "Q4 Strong gentrification"))) +
+  labs(
+    x = "Year",
+    y = "Share of Businesses",
+    fill = "Category",
+    title = "Commercial composition according to the quartile and year "
+  ) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+From the representation it is apparent that the share of types of businesses for each quartile of our gentrification score do not differ significantly, nor do they differ significantly across time. 
+
+Although our analysis is succesful in identifying neighbourhoods that have undergone gentrification it is not strongly reflected in the BPE. 
