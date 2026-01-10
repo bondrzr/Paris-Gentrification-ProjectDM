@@ -16,6 +16,7 @@ library(ggplot2)
 #| message: false
 #| warning: false
 index_rev <- readRDS(here("DATA_processed", "index_rev.rds"))
+iris_overall <- readRDS(here("DATA_processed", "iris_overall.rds"))
 ```
 
 
@@ -81,7 +82,32 @@ This is very useful for our analysis some of theses categories represent a
 We chose to measure trough an indicator with a score, gentrification at least as we see it isn't a binary variable it's a relative notion. It makes way more sense to see it as which neighbourhood is more gentrified than an other instead of simply saying which one is or isn't. 
 To do this we built an indicator that itself is composed of 3 
 
-Prices: From the DVF dataset we observed changes in housing prices over time. Using price per sqm we can create an indicator attempting to rank iris codes by the distance at which their growth in price sqm per year diverges from the mean. To do this first we created an
+Prices: 
+Using the DVF dataset, we construct a housing market indicator that measures relative price changes at the IRIS level. The aim of this indicator is to see whether housing prices in a given neighbourhood have increased at a faster rate than the Paris wide market and whether this occurs consistently over time.
+
+First for each IRIS and year, we compute a representative price per square meter using the median values. Next we compute annualised price growth rates between observed years. This expresses the price changes as a per year growth rate, making it possible to compare across different gaps of time. Housing prices are subject to influence from macroeconomic effects and city wide occurrences. To isolate the real changes in price dynamics we compute for each year the Paris wide average growth rate. This benchmark average represents the normal evolution of housing prices in that year. 
+
+Now for each IRIS year we can define relative price growth. Relative price growth is the deviation from the city wide benchmark that we calculated earlier. So for a specific IRIS year a positive deviation would mean price evolution that increased faster than the market, negative meaning prices that lagged behind the market. Then finally, relative price growth rates are accumulated over time to form a final index. This is index is constructed such that the base value 1 represents following the Paris wide price movements exactly, an index greater than 1 would result in cumulative price outperformance and an index less than 1 indicates cumulative underperformance.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+iris_overall %>%
+  arrange(desc(index_price)) %>%
+  select(CODE_IRIS, index_price) %>%
+  slice_head(n=10)
+
+# Density plot alternative (often nicer than histogram)
+ggplot(iris_overall,aes(x=index_price))+
+  geom_density(fill="darkorange",alpha=0.5)+
+  labs(title="Density of Housing Price Index",
+       x="Price Index (base = 1)",
+       y="Density")+
+  theme_minimal()
+```
+
 
 Revenue: 
 From the Filosofi dataset we constructed another indicator that captures changes in come structure at the IRIS level. This indicator is composed of two parts: a median income component and a poverty composition component. 
