@@ -142,7 +142,25 @@ ggplot(index_rev, aes(x = poverty_rank_change)) +
 ```
 
 
-Finally create a final index based on the two parts "revenue" and "poverty share". We do this by standardising each indicator such that they are both Z distributed. Thus we create a weighted linear combination concluding with the final index S = 0.6Z(inc) + 0.4Z(pov), a higher S indicates a stronger improvement than average of income changes and poverty share changes.
+The two indicators constructed from income and poverty capture changes in socioeconomic factors that can unveil gentrification. The income index reflects upwards income change and the poverty rank change reflects changes in the composition of the population. 
+
+Because the two indicators are measured on different scales and have different distributions, each is standardised to have mean zero and unit variance. Thus we create a weighted linear combination concluding with the final index S = 0.6Z(inc) + 0.4Z(pov), a higher S indicates a stronger improvement than average of income changes and poverty share changes relative to Paris wide averages.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+library(ggplot2)
+ggplot(index_rev,aes(x=index_rev))+
+  geom_histogram(bins=30,fill="darkseagreen3",color="black",alpha=0.85)+
+  labs(title="Distribution of Revenue Gentrification Index",
+       x="Revenue Index (standardised)",
+       y="Number of IRIS")+
+  theme_minimal()+
+  theme(plot.title=element_text(size=14,face="bold"),
+        axis.title=element_text(size=11))
+```
+
 
 Final Construction of the GentriScore: (How all were summed)
 
