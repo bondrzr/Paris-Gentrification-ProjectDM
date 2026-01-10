@@ -1,7 +1,10 @@
 ---
 title: "Paris Gentrification Presentation"
 author: "Paul Joahny and Matei Vasile"
-format: pdf
+format:
+  pdf:
+    toc: true
+    wordcount: true
 ---
 ```{r}
 #| echo: false
@@ -10,6 +13,10 @@ format: pdf
 library(here)
 library(dplyr)
 library(ggplot2)
+library(dplyr)
+library(sf)
+library(viridis)
+
 ```
 ```{r}
 #| echo: false
@@ -17,6 +24,14 @@ library(ggplot2)
 #| warning: false
 index_rev <- readRDS(here("DATA_processed", "index_rev.rds"))
 iris_overall <- readRDS(here("DATA_processed", "iris_overall.rds"))
+prix_iris_2020_25 <- readRDS(here("DATA_Processed", "prix_iris_2020_25.rds"))
+
+iris2020 <- st_read(here("DATA_Raw" , "CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020", "CONTOURS-IRIS.shp"),
+  quiet = TRUE) |>
+  st_transform(2154) |>
+  filter(substr(CODE_IRIS, 1, 2) == "75") |>
+  select(CODE_IRIS, NOM_IRIS)
+prix_iris_2014_18 <- readRDS(here("DATA_Processed", "prix_iris_2014_18.rds"))
 ```
 
 
@@ -82,7 +97,130 @@ This is very useful for our analysis some of theses categories represent a
 We chose to measure trough an indicator with a score, gentrification at least as we see it isn't a binary variable it's a relative notion. It makes way more sense to see it as which neighbourhood is more gentrified than an other instead of simply saying which one is or isn't. 
 To do this we built an indicator that itself is composed of 3 
 
-Prices: 
+# a. Prices
+
+This indicator was built from 2 distinct DVF databases. One from 2014 to 2018 and one from 2020 to the first semester of 2025. Respectively "DVF_Paris_2014_18" and "DVF_Paris_2020_25". These two bases represented all property transactions records for the Paris region ( this was done after a good amount of filtering). It was important to make sure these two bases had treatable data so we had to limit a few parameters, getting rid of  anything too small or anything too big ( needed a certain amount of square meters excluding closets or mansions).
+We could then build a price/squaremeter column this was done quite simply 
+
+$$
+\text{prix\_m2} = \frac{\text{valeur fonciere}}{\text{surface\_reelle\_bati}}
+$$
+
+
+
+Even after our filtering some data made no sense ( prix_m2=600 or prix_m2=50000) so we had to get rid of a part of the distribution to only keep realistic data. This mistake is most certainly the result of a typing error we're not excluding extremely cheap neighborhoods only unrealistic ones.
+
+The big step was now the Spatial reattachment. Our whole goal is to look at neighborhoods but we only have transactions how can we link them into neighborhoods ? Our data for DVF_Paris_2020_2025 are transactions but we have longitude and latitude. Those transactions function as points on a map thanks to a iris shape file we'll be able to get the irises that will function as polygons and every transaction that fits into one of these polygons (or close to the border) well get reattached to a corresponding IRIS code from 2020.
+
+But for DVF_Paris_2014_18 this wasn't as easy as we didn't have any prior IRIS code or geographical coordinates We had to rebuild from the corresponding columns a complete postal address for every transaction.We had to then extract the set of unique addresses that we had just built, as we didn't want to search for the same address for transactions that happened at the same place during different years. We then used the banR package to reverse geocode coordinates from our addresses. This functions thanks to the French national address database (BAN). Every address given by our data set receives geographical coordinates and a confidence score to gives us an idea how accurate the match is. To ensure spatial accuracy, we retained only geocoded addresses with a confidence score of at least 0.6. This threshold was found with trial and error, manually checking what level was precise enough.With the corresponding validated coordinates they got merged back into our transaction dataset. This meant that transactions with no coordinates disappeared. We find ourselves in the same position as beforehand with coordinates we only need to see which ones fit inside of the corresponding polygons.
+
+Once all transactions were spatially linked to IRIS neighborhoods, we aggregated the data by IRIS and year. For each IRIS-year pair, we were able to compute : the median price per square meter, the mean price per square meter, the number of transactions.
+To ensure we had representative resultes, we only kept  IRIS-year observations with at least five transactions. This final dataset was then merged with the 2020–2025 data to create a continuous price indicator covering the 2014–2025 period.
+
+Everything described beforehand can be found in the file "DVF_cleaning.qmd" in the file "Cleaning'.
+
+---
+
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+# Aggregate prices over the period
+prix_2014_18 <- prix_iris_2014_18 |>
+  group_by(CODE_IRIS) |>
+  summarise(
+    prix_m2_med_2014_18 = median(prix_m2_med, na.rm = TRUE),
+    n_annees = n(),
+    .groups = "drop"
+  ) |>
+  filter(n_annees >= 3)
+
+# Merge with spatial data
+iris_price_2014_18 <- iris2020 |>
+  left_join(prix_2014_18, by = "CODE_IRIS")
+
+# Plot map
+ggplot(iris_price_2014_18) +
+  geom_sf(aes(fill = prix_m2_med_2014_18), color = NA) +
+  scale_fill_viridis(
+    option = "magma",
+    direction = -1,
+    na.value = "grey85",
+    name = "Median m² price\n2014–2018"
+  ) +
+  labs(
+    title = "Median m² price per IRIS  – Paris",
+    caption = "Source : DVF, Insee"
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(),
+    axis.text = element_blank(),
+    axis.title = element_blank()
+  )
+```
+
+
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+
+# Load IRIS shapefile
+iris2020 <- st_read(
+  here(
+    "DATA_Raw",
+    "CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020",
+    "CONTOURS-IRIS.shp"
+  ),
+  quiet = TRUE
+) |>
+  st_transform(2154) |>
+  filter(substr(CODE_IRIS, 1, 2) == "75") |>
+  select(CODE_IRIS, NOM_IRIS)
+
+# Aggregate prices over the period
+prix_2020_25 <- prix_iris_2020_25 |>
+  group_by(CODE_IRIS) |>
+  summarise(
+    prix_m2_med_2020_25 = median(prix_m2_med, na.rm = TRUE),
+    n_annees = n(),
+    .groups = "drop"
+  ) |>
+  filter(n_annees >= 3)
+
+# Merge with spatial data
+iris_price_2020_25 <- iris2020 |>
+  left_join(prix_2020_25, by = "CODE_IRIS")
+
+# Plot map
+ggplot(iris_price_2020_25) +
+  geom_sf(aes(fill = prix_m2_med_2020_25), color = NA) +
+  scale_fill_viridis(
+    option = "magma",
+    direction = -1,
+    na.value = "grey85",
+    name = "Median m² price\n2020–2025"
+  ) +
+  labs(
+    title = "Median m² price per IRIS – Paris",
+    caption = "Source : DVF, Insee"
+  ) +
+  theme_minimal() +
+  theme(
+    panel.grid = element_blank(),
+    axis.text = element_blank(),
+    axis.title = element_blank()
+  )
+
+```
+
+
 Using the DVF dataset, we construct a housing market indicator that measures relative price changes at the IRIS level. The aim of this indicator is to see whether housing prices in a given neighbourhood have increased at a faster rate than the Paris wide market and whether this occurs consistently over time.
 
 First for each IRIS and year, we compute a representative price per square meter using the median values. Next we compute annualised price growth rates between observed years. This expresses the price changes as a per year growth rate, making it possible to compare across different gaps of time. Housing prices are subject to influence from macroeconomic effects and city wide occurrences. To isolate the real changes in price dynamics we compute for each year the Paris wide average growth rate. This benchmark average represents the normal evolution of housing prices in that year. 
@@ -109,7 +247,17 @@ ggplot(iris_overall,aes(x=index_price))+
 ```
 
 
-Revenue: 
+# b. Revenue
+
+This indicator was built from the FiloSofi databases. The goal of this cleaning was to create a panel of different income information at the IRIS level, harmonized across years and restricted to the Paris area. We used files from 2015, 2016, 2018, 2020, and 2021.
+
+For each year, we first read the Excel file and cleaned the column names to harmonize them, only keeping the ones we found interesting. The biggest harmonization that had to be done was with the iris codes.Iris codes evolve with time and this has to be taken into account. We had chosen prior to sink our analysis with iris code 2020. This is why we used a passage table to harmonize all codes to the same date.This allows us to track the same geographic units consistently across years.Finally, all yearly datasets were merged into a single panel, with a column indicating the year. The final dataset contains IRIS-level income data for all years from 2015 to 2021, ready for indicator construction.
+
+Everything described beforehand can be found in the file “Cleaning_FILOSFI_Files.qmd” in the “Cleaning” file The final dataset is saved as filo_final.rds.
+
+
+
+
 From the Filosofi dataset we constructed another indicator that captures changes in come structure at the IRIS level. This indicator is composed of two parts: a median income component and a poverty composition component. 
 
 We first look at mdeian income as a measure of economic change that can reveal gentrification. For each IRIS and year, we observe the median income. We compute annualised income growth rates between observed years, this produces a per-year growth rate that we can compare across time. From this we can create for each year a Paris wide average income growth. We define relative income growth as the distance of an IRIS from this city wide average. Positive values indicate that income in an IRIS has grown faster than the Paris average in that year, with negative values showing underperformance comapred to this average. Finally, we aggregated these distances over time into a cumulative relative income index with a base value of 1. An index value of 1 indicates that the median income in the IRIS followed the Paris wide average exactly over the period of time, values over 1 indicate overperformance and those udner 1 indicate underperformance. This accounts for half of the total indicator created from FiloSofi.
@@ -187,7 +335,7 @@ ggplot(index_rev,aes(x=index_rev))+
         axis.title=element_text(size=11))
 ```
 
-Population : 
+# c. Population
 
 This indicator was built from the resid_activity databases.The goal of this indicator was to measure how does the population inside a given neighborhood evolves. This is especially interesting for a gentrification perspective to look across time if the composition of a neighborhood has drastically changed ( hint of a wealthier population coming in).
 
@@ -271,7 +419,15 @@ A high score in this index should logically indicate a good neighborhood candida
 
 We then sorted IRIS by this index to identify neighborhoods showing the strongest signs of socio-economic change, and saved the results for further analysis.
 
-
-Final Construction of the GentriScore: (How all were summed)
+Gentrification score 
+This indicator was built by combining the three previously constructed indices: housing prices, population dynamics, and income/poverty changes. The goal was to create a single measure capturing the overall gentrification dynamics at the IRIS level.
+First, we harmonized IRIS codes across the three datasets to make sure we were comparing the same geographic units. Only IRIS that were present in all three datasets were kept for the final index.
+Next, each indicator was standardized to have mean zero and unit variance. To avoid extreme outliers skewing the results, we capped all standardized values at ±3.
+Finally, we constructed the composite gentrification score as a weighted sum of the three standardized components:
+0.4 × housing price index
+0.3 × population index
+0.3 × revenue index
+The resulting score gives a single measure of relative gentrification: higher values indicate stronger upward changes in housing prices, population composition, and income/poverty structure relative to the Paris-wide average.
+Everything described beforehand can be found in the file “Gentrification_Score.qmd” in the “Cleaning” folder. The final dataset is saved as gentrif_indices.rds.
 
 # 4. Conclusion 

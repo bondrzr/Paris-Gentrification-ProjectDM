@@ -8,7 +8,7 @@ format: html
 # !! IMMPORTANT !! 
 If you want to replicate our data you can either download the DVF file from : 
 <https://www.data.gouv.fr/datasets/demandes-de-valeurs-foncieres-geolocalisees> 
-This file is quite big (3,5Go) so we werent able to upload it on Git, so you can also use the reduced version you can find in DATA_RAW "DVF_Paris_2020_25.rds" this is the same one but reduced to the Paris region and with the good columns. If you're starting from the second option you can skip the next three parts and continue from "Buildind a Price/squaremeter indicator".
+This file is quite big (3,5Go) so we werent able to upload it on Git, so you can also use the reduced version you can find in DATA_RAW "DVF_Paris_2020_25.rds" this is the same one but reduced to the Paris region and with the good columns. If you're starting from the second option you can skip the next three parts and continue from "Building a Price/squaremeter indicator".
 
 
 #First DVf database (2020-1stSemester2025)
