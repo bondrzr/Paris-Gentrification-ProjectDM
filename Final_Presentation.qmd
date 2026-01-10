@@ -6,6 +6,8 @@ format:
     toc: true
     wordcount: true
 ---
+
+
 ```{r}
 #| echo: false
 #| message: false
@@ -33,6 +35,8 @@ iris2020 <- st_read(here("DATA_Raw" , "CONTOURS-IRIS_2-1_SHP_LAMB93_FXX-2020", "
   select(CODE_IRIS, NOM_IRIS)
 prix_iris_2014_18 <- readRDS(here("DATA_Processed", "prix_iris_2014_18.rds"))
 data_combined <- readRDS(here("DATA_processed", "data_combined.rds"))
+gentrif_indices <- readRDS(here("DATA_processed", "gentrif_indices.rds"))
+BPE_final_clean <- readRDS(here("DATA_Processed" , "BPE_final_clean.rds"))
 ```
 
 
@@ -97,7 +101,7 @@ This is very useful for our analysis some of theses categories represent a
 We chose to measure through an indicator with a score, gentrification at least as we see it isn't a binary variable it's a relative notion. It makes more sense to see it as which neighbourhood is more gentrified than an other instead of simply saying which one is or isn't. 
 To do this we built an indicator that itself is composed of 3 different datasets.
 
-# a. Prices
+## a. Prices index creation
 
 This indicator was built from 2 distinct DVF databases. One from 2014 to 2018 and one from 2020 to the first semester of 2025. Respectively "DVF_Paris_2014_18" and "DVF_Paris_2020_25". These two bases represented all property transactions records for the Paris region ( this was done after a good amount of filtering). It was important to make sure these two bases had treatable data so we had to limit a few parameters, getting rid of  anything too small or anything too big ( needed a certain amount of square meters excluding closets or mansions).
 We could then build a price per square meter column this was done quite simply 
@@ -247,7 +251,7 @@ ggplot(iris_overall,aes(x=index_price))+
 ```
 
 
-# b. Revenue
+## b. Revenue index creation
 
 This indicator was built from the FiloSofi databases. The goal of this cleaning was to create a panel of different income information at the IRIS level, harmonized across years and restricted to the Paris area. We used files from 2015, 2016, 2018, 2020, and 2021.
 
@@ -335,7 +339,7 @@ ggplot(index_rev,aes(x=index_rev))+
         axis.title=element_text(size=11))
 ```
 
-# c. Population
+## c. Population index creation
 
 This indicator was built from the resid_activity databases.The goal of this indicator was to measure how does the population inside a given neighborhood evolves. This is especially interesting for a gentrification perspective to look across time if the composition of a neighborhood has drastically changed ( hint of a wealthier population coming in).
 
@@ -419,7 +423,7 @@ A high score in this index should logically indicate a good neighborhood candida
 
 We then sorted IRIS by this index to identify neighborhoods showing the strongest signs of socio-economic change, and saved the results for further analysis.
 
-# d Gentrification score 
+## d Gentrification score building
 This indicator was built by combining the three previously constructed indices: housing prices, population dynamics, and income/poverty changes. The goal was to create a single measure capturing the overall gentrification dynamics at the IRIS level.
 First, we harmonized IRIS codes across the three datasets to make sure we were comparing the same geographic units. Only IRIS that were present in all three datasets were kept for the final index.
 Next, each indicator was standardized to have mean zero and unit variance. To avoid extreme outliers skewing the results, we capped all standardized values at ±3.
@@ -430,7 +434,7 @@ Finally, we constructed the composite gentrification score as a weighted sum of 
 The resulting score gives a single measure of relative gentrification: higher values indicate stronger upward changes in housing prices, population composition, and income/poverty structure relative to the Paris-wide average.
 Everything described beforehand can be found in the file “Gentrification_Score.qmd” in the “Cleaning” folder. The final dataset is saved as gentrif_indices.rds.
 
-# e BPE 
+## e BPE filtering  
 
 These data sets was built from the BPE (Base Permanentes d'Équipements) databases for the years 2016, 2018, and 2024. They give us info of one the geographical position of different establishments in France but for our analysis we limit ourselves to businesses.These databases function with a specific nomenclature with a letter and three number A405 to define what does the "equipment" do. The letter indicates a broad category and the first number a sub category. After filtering all of the bases to the Paris region and only keeping necessary columns, we face the similar problem of spatial reattachment.
 Both 2016 and 2024 base had geographical coordinates so similarly to the DVF beforehand it was just a matter of putting them inside of the corresponding IRIS_2020 neighborhoods. The 2018 one hade an IRIS code so using the previously mentionned passage table ( in the Revenue section) we were able once again to harmonize all bases to a same time frame for IRIS2020.
@@ -453,12 +457,26 @@ Once the three datasets are harmonised, they are merged into a single BPE panel.
 Our analysis focuses on the effect of gentrification on surrounding businesses (tissu commercial). For this reason, we restrict the dataset to business-related activities only. We keep categories B (Commerces) and A5 (Other services), which include proximity retail and service activities. All other equipment types are excluded.
 Finally, some activities still appear under slightly different names across years. We merge these cases into common categories when the differences are minor (for example restaurants, beauty services or specialised retail).
 
+## f. Effect of gentrification on the “tissu commercial” (BPE results)
 
-# 4. Conclusion 
-
-While we have clearly been able to contruct an index that observes gentrification dynamics from residential prices, income structure, and population composition, these observations do not translate into substantial results of changes in the BPE.
+We now investigate whether neighbourhood gentrification is associated with a different commercial structure. We use the BPE panel (2016, 2018, 2024), classify establishments into broad business categories, and compare the distribution of these categories across quartiles of the gentrification score.
 
 ```{r}
+
+#| echo: false
+#| message: false
+#| warning: false
+options(continue = FALSE)
+
+
+library(stringr)
+library(tidyr)
+
+# Assign gentrification quartiles (based on IRIS score)
+quartiles <- gentrif_indices %>%
+  mutate(score_quartile = ntile(gentrification_score, 4)) %>%
+  select(iris, score_quartile)
+
 #| echo: false
 #| message: false
 #| warning: false
@@ -495,12 +513,16 @@ data_combined <- data_combined %>%
   )
 
 
+
 ```
 
+
 ```{r}
+
 #| echo: false
 #| message: false
 #| warning: false
+
 df_quartiles <- data_combined %>%
   filter(!is.na(score_quartile)) %>%   
   group_by(score_quartile, year, categorie) %>%
@@ -511,39 +533,126 @@ df_quartiles <- data_combined %>%
 ```
 
 
+The following figure compares the commercial composition across gentrification quartiles and years. Visually, category shares appear relatively similar across quartiles and fairly stable over time, suggesting that commercial structure may adjust slowly to neighbourhood upgrading.We also see the asbence of bar in 2016 this is due to the fact that no business was part of a 4th quartel neighborhood in the 2016 base.
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+ggplot(df_quartiles, aes(x = factor(year), y = part, fill = categorie)) +
+geom_col() +
+scale_y_continuous(labels = scales::percent) +
+facet_wrap(
+~ score_quartile, nrow = 1,
+labeller = labeller(score_quartile = c(
+"1" = "Q1 Low gentrification",
+"2" = "Quartile 2",
+"3" = "Quartile 3",
+"4" = "Q4 Strong gentrification"
+))
+) +
+labs(
+x = "Year",
+y = "Share of businesses",
+fill = "Category",
+title = "Commercial composition by gentrification quartile and year"
+) +
+theme_minimal() +
+theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+```
+
+We also focus on restaurants, a category often linked to gentrification. The evolution of restaurant shares shows only mild differences across quartiles but we are able to say that the shares of restaurants is stronger in the 4th quartile even if it's only by a very small margin.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+df_rest_quartiles <- df_quartiles %>%
+filter(categorie == "Restauration")
+
+ggplot(df_rest_quartiles,
+aes(x = year, y = part, group = score_quartile, color = factor(score_quartile))) +
+geom_line(linewidth = 1.1) +
+geom_point(size = 2.6) +
+scale_color_brewer(palette = "Set1", name = "Gentrification quartile") +
+labs(
+title = "Restaurant share by gentrification quartile",
+x = "Year",
+y = "Restaurant share"
+) +
+theme_minimal() +
+theme(legend.position = "top")
+
+```
+
+To answer our question on how gentrification impacts the commercial composition of it's neighborhood, it's important to do some statistical tests. 
+
+We test whether business categories are independent from gentrification quartiles using a Pearson chi-squared test on the contingency table (quartile × category). We also report Cramér’s V as an effect size measure.
 
 
 ```{r}
 #| echo: false
 #| message: false
 #| warning: false
-ggplot(df_quartiles, aes(x = factor(year), y = part, fill = categorie)) +
-  geom_col() +
-  scale_y_continuous(labels = scales::percent) +
-  facet_wrap(~ score_quartile, nrow = 1, labeller = labeller(score_quartile = 
-                                                               c("1" = "Q1 Low gentrification",
-                                                                 "2" = "Quartile 2",
-                                                                 "3" = "Quartile 3",
-                                                                 "4" = "Q4 Strong gentrification"))) +
-  labs(
-    x = "Year",
-    y = "Share of Businesses",
-    fill = "Category",
-    title = "Commercial composition according to the quartile and year "
-  ) +
-  theme_minimal() +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1))
-```
-From the representation it is apparent that the share of types of businesses for each quartile of our gentrification score do not differ significantly, nor do they differ significantly across time. 
+library(rcompanion)
 
-Although our analysis is successful in identifying neighbourhoods that have undergone gentrification it is not strongly reflected in the BPE. 
+tab_chi2 <- data_combined %>%
+group_by(score_quartile, categorie) %>%
+summarise(nb = sum(nb, na.rm = TRUE), .groups = "drop") %>%
+pivot_wider(names_from = categorie, values_from = nb, values_fill = 0)
+
+chi2_res <- chisq.test(as.matrix(tab_chi2[, -1]))
+chi2_res
+
+cramers_v <- cramerV(as.matrix(tab_chi2[, -1]))
+cramers_v
+
+```
+
+
+The chi-squared test rejects independence (p < 0.001), indicating that commercial categories are statistically associated with gentrification quartiles. However, the effect size is very small (Cramér’s V close to zero), suggesting that this association is economically weak and may largely reflect small differences detectable with large counts.
+
+
+We fit simple linear models where the dependent variable is the category share within each quartile-year observation. These models provide a complementary view by quantifying average relationships and allowing heterogeneous patterns across categories.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+reg_simple <- lm(part ~ score_quartile, data = df_quartiles)
+summary(reg_simple)
+
+```
+
+The simple regression shows no average linear relationship between gentrification intensity and category shares, consistent with the weak effect size obtained above.
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+reg_inter <- lm(part ~ score_quartile * categorie, data = df_quartiles)
+summary(reg_inter)
+
+```
+
+
+The interaction model tests whether the relationship between gentrification and commercial structure differs by category. Overall, interaction terms provide limited evidence of strong category-specific compositional change across gentrification quartiles. Taken together, these results suggest that gentrification dynamics identified through prices, income, and population composition are not reflected in large short-run shifts across broad BPE business categories.
+
+
+# 4. Conclusion 
+
+While we have clearly been able to contruct an index that observes gentrification dynamics from residential prices, income structure, and population composition, these observations do not translate into substantial results of changes in the BPE. 
+
+From our representations and tests it is apparent that the share of types of businesses for each quartile of our gentrification score do not differ significantly, nor do they differ significantly across time. 
+
+Although our analysis is successful in identifying neighborhoods that have undergone gentrification it is not strongly reflected in the BPE. 
 
 Firstly we must address that in the BPE we have a fairly large missing column of data in 2024. The column for number of equipment's is missing which specifies the number and type of businesses in the area. This means that it is assumed in 2024 meaning any substantial change in the amount of restaurants for example is not visible.
 
-Overall when it comes to the BPE it can be for multiple reasons that we do not observe changes. First, commercial change often happens more slowly than residential change. People can move into a neighbourhood relatively quickly as housing prices and income levels change but shops and services are generally much more stable. Many businesses are under long contracts and face high relocation costs. As a result even if the population or income structure changes, the types of businesses present may remain the same for several years. 
+Overall when it comes to the BPE it can be for multiple reasons that we do not observe changes. First, commercial change often happens more slowly than residential change. People can move into a neighbourhood relatively quickly as housing prices and income levels change but shops and services are generally much more stable. Many businesses are under long contracts and face high relocation costs. As a result even if the population or income structure changes, the types of businesses present may remain the same for several years.
+But this could also be explained by our data , the timespan we studied is too short. They're aren't particularly a lot of 
 
 As well as this using business categories does not necessarily make for a viable analysis, it is difficult to differ within categories. For example, a small local cafe may be replaced by a more expensive or trendy cafe but both are counted in the same category. It is due to this that actual changes in the businesses in a neighbourhood may be completely missed in the BPE.
-
-Lastly, in a dense city like Paris, commercial space is limited and regulated. This means businesses are protected by rules and regulations, and many neighbourhoods already have well established commercial bases. This can limit the entry of new types of businesses and further slow down the rate at which the commercial makeup adapts to changes in resident population.
 
 Overall, the results indicate that gentrification in Paris is a gradual and multidimensional process. Although strong residential and socioeconomic changes can be identified at the IRIS level, their affect on the "tissu commerical" appear to be more limited or less visible in the short run.

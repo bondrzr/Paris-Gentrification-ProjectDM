@@ -9,6 +9,7 @@ library(here)
 library(dplyr)
 library(ggplot2)
 library(here)
+library(sf)
 BPE_final_clean <- readRDS(here("DATA_Processed" , "BPE_final_clean.rds"))
 gentrif_indices <- readRDS(here("DATA_Processed", "gentrif_indices.rds")) 
 
@@ -23,6 +24,16 @@ quartiles <- gentrif_indices %>%
 
 data_combined <- BPE_final_clean %>%
   left_join(quartiles, by = "iris")
+data_combined <- data_combined %>%
+  left_join(
+    gentrif_indices %>%
+      select(iris, gentrification_score),
+    by = "iris"
+  )
+
+data_combined <- data_combined %>%
+  st_drop_geometry()
+
 
 saveRDS(data_combined , here("DATA_Processed" , "data_combined.rds"))
 ```
@@ -98,4 +109,69 @@ ggplot(df_quartiles, aes(x = factor(year), y = part, fill = categorie)) +
 
 ```
 
+
+```{r}
+library(ggplot2)
+
+# Filtrer uniquement la catégorie Restauration
+df_rest_quartiles <- df_quartiles %>%
+  filter(categorie == "Restauration")
+
+# Graphique
+ggplot(df_rest_quartiles, aes(x = year, y = part, color = factor(score_quartile), group = score_quartile)) +
+  geom_line(size = 1.2) +
+  geom_point(size = 3) +
+  scale_color_brewer(palette = "Set1", name = "Quartile de gentrification") +
+  labs(
+    title = "Part des restaurants selon les quartiles de gentrification",
+    x = "Année",
+    y = "Part des restaurants"
+  ) +
+  theme_minimal(base_size = 14) +
+  theme(
+    legend.position = "top",
+    plot.title = element_text(face = "bold", hjust = 0.5)
+  )
+
+```
+
+```{r}
+tab_chi2 <- data_combined %>%
+  group_by(score_quartile, categorie) %>%
+  summarise(nb = sum(nb, na.rm = TRUE), .groups = "drop") %>%
+  tidyr::pivot_wider(
+    names_from = categorie,
+    values_from = nb,
+    values_fill = 0
+  )
+
+chisq.test(as.matrix(tab_chi2[,-1]))
+
+```
+```{r}
+library(rcompanion)
+
+cramerV(as.matrix(tab_chi2[, -1]))
+
+```
+
+
+```{r}
+reg_simple <- lm(
+  part ~ score_quartile,
+  data = df_quartiles
+)
+
+summary(reg_simple)
+
+```
+```{r}
+reg_inter <- lm(
+  part ~ score_quartile * categorie,
+  data = df_quartiles
+)
+
+summary(reg_inter)
+
+```
 
