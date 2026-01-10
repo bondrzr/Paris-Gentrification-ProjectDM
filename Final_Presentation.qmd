@@ -3,6 +3,21 @@ title: "Paris Gentrification Presentation"
 author: "Paul Joahny and Matei Vasile"
 format: pdf
 ---
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+library(here)
+library(dplyr)
+library(ggplot2)
+```
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+iris_overall <- readRDS(here("DATA_processed", "iris_overall.rds"))
+```
+
 
 # 1. Research Question
 
@@ -69,7 +84,33 @@ To do this we built an indicator that itself is composed of 3
 Prices: From the DVF dataset we observed changes in housing prices over time. Using price per sqm we can create an indicator attempting to rank iris codes by the distance at which their growth in price sqm per year diverges from the mean. To do this first we created an
 
 Revenue: 
-From the filosofi dataset we constructed another indicator. First we looked at income. Using median income values for each IRIS and year we calculate a per year income growth rate for an iris between two years. From this we can create a Paris wide average growth from which we can determine the difference of the growth rate of income in a specific IRIS from this city wide average. The index is thus based on how an IRIS beats this city wide average over all years. This accounts for half of the total indicator created from FiloSofi.
+From the Filosofi dataset we constructed another indicator that captures changes in come structure at the IRIS level. This indicator is composed of two parts: a median income component and a poverty composition component. 
+
+We first look at mdeian income as a measure of economic change that can reveal gentrification. For each IRIS and year, we observe the median income. We compute annualised income growth rates between observed years, this produces a per-year growth rate that we can compare across time. From this we can create for each year a Paris wide average income growth. We define relative income growth as the distance of an IRIS from this city wide average. Positive values indicate that income in an IRIS has grown faster than the Paris average in that year, with negative values showing underperformance comapred to this average. Finally, we aggregated these distances over time into a cumulative relative income index with a base value of 1. An index value of 1 indicates that the median income in the IRIS followed the Paris wide average exactly over the period of time, values over 1 indicate overperformance and those udner 1 indicate underperformance. This accounts for half of the total indicator created from FiloSofi.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+iris_overall %>%
+  arrange(desc(index_price)) %>%
+  select(CODE_IRIS, index_price) %>%
+  slice_head(n = 10)
+```
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+ggplot(iris_overall, aes(x = index_price)) +
+  geom_histogram(bins = 30, fill = "steelblue") +
+  labs(
+    title = "Distribution of Income Index",
+    x = "Income Index (base = 1)",
+    y = "Number of IRIS"
+  ) +
+  theme_minimal()
+```
+
 
 The second part is constructed from the percentage of the population who have an income deemed under the "poverty line". Each IRIS has a value of its poverty share each year. For each year we can rank all the IRIS codes on this poverty share. From this we can observe how this changes from year to year and create a cumulative score of change in this poverty share each year. Those IRIS that exceeded the average score highly on the final poverty rank change index.
 
