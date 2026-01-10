@@ -537,12 +537,14 @@ ggplot(df_quartiles, aes(x = factor(year), y = part, fill = categorie)) +
 ```
 From the representation it is apparent that the share of types of businesses for each quartile of our gentrification score do not differ significantly, nor do they differ significantly across time. 
 
-Although our analysis is succesful in identifying neighbourhoods that have undergone gentrification it is not strongly reflected in the BPE. 
+Although our analysis is successful in identifying neighbourhoods that have undergone gentrification it is not strongly reflected in the BPE. 
 
-Firstly we must address that in the BPE we have a fairly large missing column of data in 2024. The column for number of equipments is missing which specifies the number and type of businesses in the area. This means that it is assumed in 2024 meaning any substantial change in the amount of restaurants for example is not visible.
+Firstly we must address that in the BPE we have a fairly large missing column of data in 2024. The column for number of equipment's is missing which specifies the number and type of businesses in the area. This means that it is assumed in 2024 meaning any substantial change in the amount of restaurants for example is not visible.
 
-Overall when it comes to the BPE it can be for multiple reasons that we do not observe changes. First, commerical change often happens more slowly than residential change. People can move into a neighbourhood relatively quickly as housing prices and income levels change but shops and services are generally much more stable. Many businesses are under long contracts and face high relocation costs. As a result even if the population or income structure changes, the types of businesses present may remain the same for several years. 
+Overall when it comes to the BPE it can be for multiple reasons that we do not observe changes. First, commercial change often happens more slowly than residential change. People can move into a neighbourhood relatively quickly as housing prices and income levels change but shops and services are generally much more stable. Many businesses are under long contracts and face high relocation costs. As a result even if the population or income structure changes, the types of businesses present may remain the same for several years. 
 
-As well as this using business categories does not neccesarily make for a viable analysis, it is difficult to differ within categories, for example, a small local cafe may be replaced by a more expensive or trendy cafe but both are counted in the same category.
+As well as this using business categories does not necessarily make for a viable analysis, it is difficult to differ within categories. For example, a small local cafe may be replaced by a more expensive or trendy cafe but both are counted in the same category. It is due to this that actual changes in the businesses in a neighbourhood may be completely missed in the BPE.
 
 Lastly, in a dense city like Paris, commercial space is limited and regulated. This means businesses are protected by rules and regulations, and many neighbourhoods already have well established commercial bases. This can limit the entry of new types of businesses and further slow down the rate at which the commercial makeup adapts to changes in resident population.
+
+Overall, the results indicate that gentrification in Paris is a gradual and multidimensional process. Although strong residential and socioeconomic changes can be identified at the IRIS level, their affect on the "tissu commerical" appear to be more limited or less visible in the short run.
