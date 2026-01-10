@@ -131,7 +131,7 @@ saveRDS(
 
 
 ```{r}
-BPE_2016_sf <- BPE_2016_clean |>
+BPE_2016_sf <- BPE_2016_paris |>
   st_as_sf(
     coords = c("longitude", "latitude"),
     crs = 4326,      # WGS84

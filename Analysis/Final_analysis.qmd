@@ -6,6 +6,9 @@ format: html
 
 ```{r}
 library(here)
+library(dplyr)
+library(ggplot2)
+library(here)
 BPE_final_clean <- readRDS(here("DATA_Processed" , "BPE_final_clean.rds"))
 gentrif_indices <- readRDS(here("DATA_Processed", "gentrif_indices.rds")) 
 
@@ -13,181 +16,86 @@ gentrif_indices <- readRDS(here("DATA_Processed", "gentrif_indices.rds"))
 
 
 ```{r}
-library(dplyr)
+
+quartiles <- gentrif_indices %>%
+  mutate(score_quartile = ntile(gentrification_score, 4)) %>%
+  select(iris, score_quartile)
 
 data_combined <- BPE_final_clean %>%
-  left_join(gentrif_indices %>% select(iris, gentrification_score), by = "iris")
-
-data_combined <- data_combined %>%
-  mutate(score_quartile = ntile(gentrification_score, 4))  
+  left_join(quartiles, by = "iris")
 
 saveRDS(data_combined , here("DATA_Processed" , "data_combined.rds"))
 ```
 
 ```{r}
 
-
-data_combined %>%
-  group_by(score_quartile, type_clean) %>%
-  summarise(nb_commerces = sum(nb), .groups = "drop") %>%
-  group_by(score_quartile) %>%
-  mutate(part = nb_commerces / sum(nb_commerces))
-
-```
-
-```{r}
-df <- data_combined %>%
-  group_by(score_quartile, type_clean) %>%
-  summarise(nb_commerces = sum(nb), .groups = "drop") %>%
-  group_by(score_quartile) %>%
-  mutate(part = nb_commerces / sum(nb_commerces))
-
-```
-
-
-
-
-```{r}
-library(ggplot2)
-
-ggplot(df, aes(x = score_quartile, y = part, fill = type_clean)) +
-  geom_col() +
-  labs(
-    x = "Quartile de gentrification",
-    y = "Part des commerces",
-    fill = "Type de commerce"
-  )
-
-
-```
-
-
-```{r}
 data_combined <- data_combined %>%
   mutate(
     categorie = case_when(
-  
+      str_detect(type_clean, regex("restaurant", ignore_case = TRUE)) ~ "Restauration",
       type_clean %in% c(
-        "restaurant–restauration–rapide"
-      ) ~ "Restauration",
-      
-      
+        "boulangerie-patisserie", "boucherie charcuterie", "poissonnerie", 
+        "epicerie", "commerce specialise en fruits et legumes", "produits surgeles", 
+        "superette", "supermarche", "supermarche et magasin multi-commerce", 
+        "hypermarche et grand magasin", "autres commerces alimentaires"
+      ) ~ "Proximity",
       type_clean %in% c(
-        "boulangerie-patisserie",
-        "boucherie charcuterie",
-        "poissonnerie",
-        "epicerie",
-        "commerce specialise en fruits et legumes",
-        "produits surgeles",
-        "superette",
-        "supermarche",
-        "supermarche et magasin multi-commerce",
-        "hypermarche et grand magasin",
-        "autres commerces alimentaires"
-      ) ~ "Proximité",
-      
-    
-      type_clean %in% c(
-        "coiffure",
-        "institut de beaute–onglerie",
-        "parfumerie–cosmetique",
-        "pressing–laverie automatique",
-        "blanchisserie–teinturerie",
-        "agence de travail temporaire",
-        "agence immobiliere",
-        "veterinaire"
+        "coiffure", "institut de beaute–onglerie", "parfumerie–cosmetique", 
+        "pressing–laverie automatique", "blanchisserie–teinturerie", 
+        "agence de travail temporaire", "agence immobiliere", "veterinaire"
       ) ~ "Services",
-      
-    
       type_clean %in% c(
-        "librairie–papeterie–journaux",
-        "magasin de vetements",
-        "magasin de chaussures",
-        "magasin d'optique",
-        "horlogerie–bijouterie",
-        "maroquinerie et articles de voyage",
-        "magasin de meubles",
-        "magasin d'equipements du foyer",
+        "librairie–papeterie–journaux", "magasin de vetements", "magasin de chaussures",
+        "magasin d'optique", "horlogerie–bijouterie", "maroquinerie et articles de voyage",
+        "magasin de meubles", "magasin d'equipements du foyer",
         "magasin d'electromenager et de mat. audio–video",
         "magasin electromenager, materiel audio video informatique",
         "magasin de materiels de telecommunication",
-        "commerce de jeux et jouets",
-        "magasin d'art. de sports et de loisirs",
-        "magasin d'articles de sports et de loisirs",
-        "commerce de biens d'occasion",
-        "commerce de tissus et mercerie",
-        "droguerie quincaillerie bricolage",
-        "grande surface de bricolage",
-        "magasin de revetements murs et sols",
-        "magasin de materiel medical et orthopedique",
-        "commerce de boissons"
-      ) ~ "Commerce spécialisé",
-      
-      TRUE ~ "Autres"
+        "commerce de jeux et jouets", "magasin d'art. de sports et de loisirs",
+        "magasin d'articles de sports et de loisirs", "commerce de biens d'occasion",
+        "commerce de tissus et mercerie", "droguerie quincaillerie bricolage",
+        "grande surface de bricolage", "magasin de revetements murs et sols",
+        "magasin de materiel medical et orthopedique", "commerce de boissons"
+      ) ~ "Specialised Businesses",
+      TRUE ~ "Other"
     )
   )
 
+
 ```
 
-
 ```{r}
-df_cat <- data_combined %>%
-  group_by(score_quartile, categorie) %>%
-  summarise(nb_commerces = sum(nb), .groups = "drop") %>%
-  group_by(score_quartile) %>%
+df_quartiles <- data_combined %>%
+  filter(!is.na(score_quartile)) %>%   
+  group_by(score_quartile, year, categorie) %>%
+  summarise(nb_commerces = sum(nb, na.rm = TRUE), .groups = "drop") %>%
+  group_by(score_quartile, year) %>%
   mutate(part = nb_commerces / sum(nb_commerces))
 
 ```
 
 
+
+
 ```{r}
-ggplot(df_cat, aes(x = factor(score_quartile), y = part, fill = categorie)) +
-  geom_col(position = "fill") +
+ggplot(df_quartiles, aes(x = factor(year), y = part, fill = categorie)) +
+  geom_col() +
   scale_y_continuous(labels = scales::percent) +
+  facet_wrap(~ score_quartile, nrow = 1, labeller = labeller(score_quartile = 
+                                                               c("1" = "Q1 Low gentrification",
+                                                                 "2" = "Quartile 2",
+                                                                 "3" = "Quartile 3",
+                                                                 "4" = "Q4 Strong gentrification"))) +
   labs(
-    x = "Quartile de gentrification",
-    y = "Part des commerces",
-    fill = "Catégorie",
-    title = "Composition commerciale selon le niveau de gentrification"
+    x = "Year",
+    y = "Share of Businesses",
+    fill = "Category",
+    title = "Commercial composition according to the quartile and year "
   ) +
-  theme_minimal()
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
 
 ```
 
-```{r}
-df_cat %>%
-  filter(categorie == "Restauration") %>%
-  ggplot(aes(x = score_quartile, y = part)) +
-  geom_line(group = 1) +
-  geom_point(size = 2) +
-  scale_y_continuous(labels = scales::percent) +
-  labs(
-    x = "Quartile de gentrification",
-    y = "Part des commerces",
-    title = "Part de la restauration selon la gentrification"
-  ) +
-  theme_minimal()
-
-```
-
-```{r}
-data_combined %>%
-  group_by(score_quartile, categorie, iris) %>%
-  summarise(nb_iris = sum(nb), .groups = "drop") %>%
-  group_by(score_quartile, categorie) %>%
-  summarise(nb_moyen = mean(nb_iris), .groups = "drop") %>%
-  ggplot(aes(x = factor(score_quartile), y = nb_moyen, fill = categorie)) +
-  geom_col(position = "dodge") +
-  labs(
-    x = "Quartile de gentrification",
-    y = "Nombre moyen de commerces par IRIS",
-    fill = "Catégorie"
-  ) +
-  theme_minimal()
-
-```
-
-```{r}
-
-```
 
