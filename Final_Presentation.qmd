@@ -419,7 +419,7 @@ A high score in this index should logically indicate a good neighborhood candida
 
 We then sorted IRIS by this index to identify neighborhoods showing the strongest signs of socio-economic change, and saved the results for further analysis.
 
-Gentrification score 
+# d Gentrification score 
 This indicator was built by combining the three previously constructed indices: housing prices, population dynamics, and income/poverty changes. The goal was to create a single measure capturing the overall gentrification dynamics at the IRIS level.
 First, we harmonized IRIS codes across the three datasets to make sure we were comparing the same geographic units. Only IRIS that were present in all three datasets were kept for the final index.
 Next, each indicator was standardized to have mean zero and unit variance. To avoid extreme outliers skewing the results, we capped all standardized values at ±3.
@@ -429,5 +429,29 @@ Finally, we constructed the composite gentrification score as a weighted sum of 
 0.3 × revenue index
 The resulting score gives a single measure of relative gentrification: higher values indicate stronger upward changes in housing prices, population composition, and income/poverty structure relative to the Paris-wide average.
 Everything described beforehand can be found in the file “Gentrification_Score.qmd” in the “Cleaning” folder. The final dataset is saved as gentrif_indices.rds.
+
+# e BPE 
+
+These data sets was built from the BPE (Base Permanentes d'Équipements) databases for the years 2016, 2018, and 2024. They give us info of one the geographical position of different establishments in France but for our analysis we limit ourselves to businesses.These databases function with a specific nomenclature with a letter and three number A405 to define what does the "equipment" do. The letter indicates a broad category and the first number a sub category. After filtering all of the bases to the Paris region and only keeping necessary columns, we face the similar problem of spatial reattachment.
+Both 2016 and 2024 base had geographical coordinates so similarly to the DVF beforehand it was just a matter of putting them inside of the corresponding IRIS_2020 neighborhoods. The 2018 one hade an IRIS code so using the previously mentionned passage table ( in the Revenue section) we were able once again to harmonize all bases to a same time frame for IRIS2020.
+
+All of the previously mentioned work can be found in file "Cleaning_BPE.qmd" which is found in "Cleaning" file.
+
+We then  use our three previously worked BPE datasets.They describe the same type of information but the variable names and nomenclatures differ across years. We notice as time goes on the nomenclature gets more and more specific declining into smaller more precise categories. Once again in  order to be able to compare them, a harmonisation step is required.
+The BPE 2024 dataset only contains equipment type codes. To make the data workable, we merge the official BPE 2024 nomenclature in order to retrieve the corresponding labels. This makes it possible to work directly with readable activity names which are more easily understandable. 
+Each yearly dataset is then reduced to a common structure. We only keep 
+    iris <- the harmonized iris code 
+    year <- the year the equipment was registered in 
+    code <- this the four character to design 
+    type <- clear label of what this equipment is 
+    nb  <- how many of those are found in this area 
+    
+The problem is that the nb in 2024 had a lot of missing data so we assume a value of one when there's an NA, which corresponds to the presence of a single establishment.
+
+Once the three datasets are harmonised, they are merged into a single BPE panel. To avoid artificial differences due to spelling, accents or casing, all equipment labels are normalised by converting them to lowercase and removing accents.
+
+Our analysis focuses on the effect of gentrification on surrounding businesses (tissu commercial). For this reason, we restrict the dataset to business-related activities only. We keep categories B (Commerces) and A5 (Other services), which include proximity retail and service activities. All other equipment types are excluded.
+Finally, some activities still appear under slightly different names across years. We merge these cases into common categories when the differences are minor (for example restaurants, beauty services or specialised retail).
+
 
 # 4. Conclusion 
