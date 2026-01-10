@@ -187,6 +187,90 @@ ggplot(index_rev,aes(x=index_rev))+
         axis.title=element_text(size=11))
 ```
 
+Population : 
+
+This indicator was built from the resid_activity databases.The goal of this indicator was to measure how does the population inside a given neighborhood evolves. This is especially interesting for a gentrification perspective to look across time if the composition of a neighborhood has drastically changed ( hint of a wealthier population coming in).
+
+To do so we used 4 databses from 2018 to 2021 which we restricted to the Paris area. Like for the rest of our analysis we needed to harmonize the iris codes to a same Year format and have temporal compatibilty, we kept the IRIS-2020 like for the rest of our previous databases.
+
+The important aspect was now to know which variables to keep further on for our analysis.
+Except the ones to help identify (iris , year, ...) we choose to keep :
+
+  -pop1564 <- This represents the total population of the neighbourhood between 15-64.
+  
+  -act1564  <- This represents the population either working or unemployed ( actively searching for work) of the neighborhood between 15-64.
+  
+  -actocc1564 <- In act1564 this represents the number people in the neighborhood with  a job.
+  
+  -chom1564 <- In act1564 this represents the number of unemployed unemployed people in the neighborhood (act1564 = chom1564+ actocc1564)
+  
+  -sal15p <- this represents the number of residents of the neighborhood that are receiving  a salary ( in contrary to being independent and being your own boss).
+  
+  -etud1564 <- this represents the number of residents of the neighborhood that are students between the age 15-64. ( They are not considered as actives).
+  
+  -cadres_1564 <- This represents a sub group of actocc1564, those are residents with a job but more specifically that are executives.
+  
+  -prof_inter_1564  <- This represents a sub group of actocc1564, those are residents with a job but more specifically that are
+  
+  -employes_1564  <-   This represents a sub group of actocc1564, those are residents with a job but more specifically that are employees 
+  
+  -ouvriers_1564 <- This represents a sub group of actocc1564, those are residents with a job but more specifically that are workers ( Closer to manual labor,factory work for example)   
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+library(dplyr)
+library(knitr)
+library(kableExtra)
+JOB_all <-readRDS(here("DATA_Processed", "JOB_all.rds"))
+
+JOB_all %>%
+head(5) %>%
+kable(
+caption = "First 5 lines of Merged base",
+digits = 2
+) %>%
+kable_styling(font_size = 7)
+
+```
+
+All of the previously mentioned work can be found in file "Cleaning_resid_actity.qmd" which is found in "Cleaning" file.
+
+After creating this database , it was time to build an indicator. We felt it wasn't very interesting to look at absolute values but more interesting to look at shares of a given CSP( Socio-Professional Category). We made sure our denominator was always bigger than 0 ( Trying to avoid dividing by 0). 
+
+We then created 3 new variables: 
+
+share_csp_sup   = (cadres_1564 + prof_inter_1564) / actocc1564
+Csp_sup is a new category we built to look at how more "privileged" or "high-end" professions would be entering the neighborhood. The fact we made it a share reads as the percentage of these high end profile in respect of all workers in the neighborhood. If this share increased this could be seen as more and more of these individuals entering a certain neighborhood, a good lead for gentrification.
+
+ 
+share_populaire = (employes_1564 + ouvriers_1564) / actocc1564,
+Populaire is the opposite side of this analysis. This would be the profile you'd expect to be living in a future gentrified neighborhood and would expect their number to decrease as they are being replaced by CSP_sup. You'd expect that these shares evolve in opposite trends when looking at a potential candidate for gentrification.
+
+share_chom = chom1564 / act1564
+This represents the unemployment rate for all active residents. 
+
+After having created these three new variables, we then focused on looking at how these shares evolved over time rather than just their absolute values. To do this, we calculated the slope of each share for each IRIS. To do so we used a linear regression of each share to to find yearly trend. THe goal was to see if the proportion of privileged profession were increasing, if the more popular profession was decreasing and how unemployment was evolving. The goal was to look at dynamic changes since gentrification is a long term process we need some overtime tendancies.
+
+Next, we filtered IRIS with at least 4 years of data to ensure the trends were reliable (available all of our databases timespan 2018-2021). Then, we standardized the slopes (converted them to Z-scores) to put them on the same scale. This step is important because it allows us to combine these different trends into a single indicator without one variable dominating the others simply because of its scale.
+
+Finally, we created a composite population index (index_pop) defined as:
+
+$$
+\text{index\_pop} = Z_{CSP+} - Z_{populaire} - Z_{chom}, 
+$$
+
+where:
+
+- $Z_{CSP+}$ = standardized slope of high-end professions,  
+- $Z_{populaire}$ = standardized slope of popular professions,  
+- $Z_{chom}$ = standardized slope of unemployment.
+
+A high score in this index should logically indicate a good neighborhood candidate for gentrification because it should show a certain iris code where the proportion of privileged professions is increasing while the proportion of popular professions and unemployment are decreasing. These tendencies are very consistent with gentrification. On the opposite side a low score should either show a stable neighborhood ( already gentrified or not concerned) or opposite trends which can't be seen as gentrification.
+
+We then sorted IRIS by this index to identify neighborhoods showing the strongest signs of socio-economic change, and saved the results for further analysis.
+
 
 Final Construction of the GentriScore: (How all were summed)
 
